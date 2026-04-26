@@ -2,7 +2,19 @@
 
 import Link from 'next/link'
 import { useMemo } from 'react'
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, cn } from 'ui'
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  TabsContent_Shadcn_,
+  TabsList_Shadcn_,
+  TabsTrigger_Shadcn_,
+  Tabs_Shadcn_,
+  cn,
+} from 'ui'
 
 import { useCommunityDocsSearch } from '@/components/CommunityDocsSearchProvider.client'
 import { SupabaseMark } from '@/components/TopNav'
@@ -35,6 +47,282 @@ const areas = [
   { label: 'Other', icon: 'other' },
 ] as const
 
+const clientLibraryFeatures = [
+  'Supabase',
+  'PostgREST',
+  'Auth',
+  'Realtime',
+  'Storage',
+  'Edge Runtime',
+] as const
+
+type ClientLibraryFeature = (typeof clientLibraryFeatures)[number]
+
+type ClientLibrary = {
+  language: string
+  group: 'Official' | 'Community'
+  libraries: Record<ClientLibraryFeature, string | null>
+}
+
+const clientLibraries: ClientLibrary[] = [
+  {
+    language: 'JavaScript (TypeScript)',
+    group: 'Official',
+    libraries: {
+      Supabase: 'supabase-js',
+      PostgREST: 'postgrest-js',
+      Auth: 'auth-js',
+      Realtime: 'realtime-js',
+      Storage: 'storage-js',
+      'Edge Runtime': 'functions-js',
+    },
+  },
+  {
+    language: 'Flutter',
+    group: 'Official',
+    libraries: {
+      Supabase: 'supabase-flutter',
+      PostgREST: 'postgrest-dart',
+      Auth: 'gotrue-dart',
+      Realtime: 'realtime-dart',
+      Storage: 'storage-dart',
+      'Edge Runtime': 'functions-dart',
+    },
+  },
+  {
+    language: 'Swift',
+    group: 'Official',
+    libraries: {
+      Supabase: 'supabase-swift',
+      PostgREST: 'postgrest-swift',
+      Auth: 'auth-swift',
+      Realtime: 'realtime-swift',
+      Storage: 'storage-swift',
+      'Edge Runtime': 'functions-swift',
+    },
+  },
+  {
+    language: 'Python',
+    group: 'Official',
+    libraries: {
+      Supabase: 'supabase-py',
+      PostgREST: 'postgrest-py',
+      Auth: 'auth-py',
+      Realtime: 'realtime-py',
+      Storage: 'storage-py',
+      'Edge Runtime': 'functions-py',
+    },
+  },
+  {
+    language: 'C#',
+    group: 'Community',
+    libraries: {
+      Supabase: 'supabase-csharp',
+      PostgREST: 'postgrest-csharp',
+      Auth: 'gotrue-csharp',
+      Realtime: 'realtime-csharp',
+      Storage: 'storage-csharp',
+      'Edge Runtime': 'functions-csharp',
+    },
+  },
+  {
+    language: 'F#',
+    group: 'Community',
+    libraries: {
+      Supabase: 'supabase-fsharp',
+      PostgREST: 'postgrest-fsharp',
+      Auth: 'gotrue-fsharp',
+      Realtime: null,
+      Storage: 'storage-fsharp',
+      'Edge Runtime': 'functions-fsharp',
+    },
+  },
+  {
+    language: 'Go',
+    group: 'Community',
+    libraries: {
+      Supabase: null,
+      PostgREST: 'postgrest-go',
+      Auth: 'auth-go',
+      Realtime: null,
+      Storage: 'storage-go',
+      'Edge Runtime': 'functions-go',
+    },
+  },
+  {
+    language: 'Elixir',
+    group: 'Community',
+    libraries: {
+      Supabase: 'supabase-ex',
+      PostgREST: 'postgrest-ex',
+      Auth: 'auth-ex',
+      Realtime: 'realtime-ex',
+      Storage: 'storage-ex',
+      'Edge Runtime': 'functions-ex',
+    },
+  },
+  {
+    language: 'Java',
+    group: 'Community',
+    libraries: {
+      Supabase: null,
+      PostgREST: null,
+      Auth: 'gotrue-java',
+      Realtime: null,
+      Storage: 'storage-java',
+      'Edge Runtime': null,
+    },
+  },
+  {
+    language: 'Kotlin',
+    group: 'Community',
+    libraries: {
+      Supabase: 'supabase-kt',
+      PostgREST: 'postgrest-kt',
+      Auth: 'auth-kt',
+      Realtime: 'realtime-kt',
+      Storage: 'storage-kt',
+      'Edge Runtime': 'functions-kt',
+    },
+  },
+  {
+    language: 'PHP',
+    group: 'Community',
+    libraries: {
+      Supabase: 'supabase-php',
+      PostgREST: 'postgrest-php',
+      Auth: 'gotrue-php',
+      Realtime: 'realtime-php',
+      Storage: 'storage-php',
+      'Edge Runtime': 'functions-php',
+    },
+  },
+  {
+    language: 'Ruby',
+    group: 'Community',
+    libraries: {
+      Supabase: 'supabase-rb',
+      PostgREST: 'postgrest-rb',
+      Auth: null,
+      Realtime: null,
+      Storage: null,
+      'Edge Runtime': null,
+    },
+  },
+  {
+    language: 'Rust',
+    group: 'Community',
+    libraries: {
+      Supabase: null,
+      PostgREST: 'postgrest-rs',
+      Auth: 'auth-rs',
+      Realtime: null,
+      Storage: null,
+      'Edge Runtime': null,
+    },
+  },
+  {
+    language: 'Godot Engine (GDScript)',
+    group: 'Community',
+    libraries: {
+      Supabase: 'supabase-gdscript',
+      PostgREST: 'postgrest-gdscript',
+      Auth: 'gotrue-gdscript',
+      Realtime: 'realtime-gdscript',
+      Storage: 'storage-gdscript',
+      'Edge Runtime': 'functions-gdscript',
+    },
+  },
+]
+
+const selfHostedProjects = [
+  {
+    name: 'supabase-kubernetes',
+    description: 'Helm charts to deploy Supabase on Kubernetes.',
+  },
+  {
+    name: 'supabase-terraform',
+    description: 'Terraform resources for self-hosting Supabase.',
+  },
+  {
+    name: 'supabase-traefik',
+    description: 'Traefik configuration for self-hosted Supabase deployments.',
+  },
+  {
+    name: 'supabase-on-aws',
+    description: 'CDK and CloudFormation templates for Supabase on AWS.',
+  },
+]
+
+const utilityGroups: { heading: string; items: { name: string; description?: string }[] }[] = [
+  {
+    heading: 'General',
+    items: [
+      {
+        name: 'sql-examples',
+        description: 'Curated list of SQL to help you find useful script easily.',
+      },
+    ],
+  },
+  {
+    heading: 'Dart + Flutter',
+    items: [{ name: 'supabase-flutter-quickstart' }],
+  },
+  {
+    heading: 'React + Next',
+    items: [{ name: 'next-server-components' }],
+  },
+  {
+    heading: 'Svelte',
+    items: [
+      { name: 'svelte-supabase' },
+      { name: 'supabase-ui-svelte' },
+      { name: 'supabase-sveltekit-example' },
+      { name: 'svelte-kanban' },
+    ],
+  },
+  {
+    heading: 'Vue + Nuxt',
+    items: [{ name: 'nuxt-supabase' }, { name: 'vue-supabase' }],
+  },
+]
+
+const clientLibraryUrlByName: Record<string, string> = {
+  'supabase-js': 'https://github.com/supabase/supabase-js',
+  'postgrest-js': 'https://github.com/supabase/postgrest-js',
+  'auth-js': 'https://github.com/supabase/auth-js',
+  'realtime-js': 'https://github.com/supabase/realtime-js',
+  'storage-js': 'https://github.com/supabase/storage-js',
+  'functions-js': 'https://github.com/supabase/functions-js',
+  'supabase-flutter': 'https://github.com/supabase/supabase-flutter/tree/main/packages/supabase_flutter',
+  'postgrest-dart': 'https://github.com/supabase/supabase-flutter/tree/main/packages/postgrest',
+  'gotrue-dart': 'https://github.com/supabase/supabase-flutter/tree/main/packages/gotrue',
+  'realtime-dart':
+    'https://github.com/supabase/supabase-flutter/tree/main/packages/realtime_client',
+  'storage-dart': 'https://github.com/supabase/supabase-flutter/tree/main/packages/storage_client',
+  'functions-dart':
+    'https://github.com/supabase/supabase-flutter/tree/main/packages/functions_client',
+  'supabase-swift': 'https://github.com/supabase/supabase-swift',
+  'postgrest-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/PostgREST',
+  'auth-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/Auth',
+  'realtime-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/Realtime',
+  'storage-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/Storage',
+  'functions-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/Functions',
+  'supabase-py': 'https://github.com/supabase/supabase-py',
+  'postgrest-py': 'https://github.com/supabase/postgrest-py',
+  'auth-py': 'https://github.com/supabase/auth-py',
+  'realtime-py': 'https://github.com/supabase/realtime-py',
+  'storage-py': 'https://github.com/supabase/storage-py',
+  'functions-py': 'https://github.com/supabase/functions-py',
+  'postgrest-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Postgrest',
+  'auth-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Auth',
+  'realtime-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Realtime',
+  'storage-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Storage',
+  'functions-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Functions',
+  'auth-rs': 'https://github.com/supabase-community/supabase-auth-rs',
+  'supabase-gdscript': 'https://github.com/supabase-community/godot-engine.supabase',
+}
+
 function getAreaId(label: string) {
   return label
     .toLowerCase()
@@ -49,6 +337,14 @@ function formatCount(value: number) {
   }
 
   return value.toString()
+}
+
+function getCommunityRepoUrl(name: string) {
+  return `https://github.com/supabase-community/${name}`
+}
+
+function getClientLibraryUrl(name: string) {
+  return clientLibraryUrlByName[name] ?? getCommunityRepoUrl(name)
 }
 
 const IconAreaDatabase = ({ className }: AreaIconProps) => (
@@ -236,6 +532,146 @@ const PopularCard = ({ pages }: { pages: CommunityDocSummary[] }) => {
   )
 }
 
+const SectionHeader = ({ title, description }: { title: string; description: string }) => (
+  <div>
+    <h2 className="text-2xl font-medium tracking-[-0.03em] text-foreground">{title}</h2>
+    <p className="text-sm text-foreground-lighter">{description}</p>
+  </div>
+)
+
+const ClientLibraryLink = ({ name }: { name: string | null }) => {
+  if (name === null) {
+    return <span className="text-foreground-muted">Not listed</span>
+  }
+
+  return (
+    <a
+      className="font-medium text-brand transition-colors hover:text-brand-600"
+      href={getClientLibraryUrl(name)}
+      rel="noreferrer"
+      target="_blank"
+    >
+      {name}
+    </a>
+  )
+}
+
+const ClientLibrariesSection = () => (
+  <section id="client-libraries" className="scroll-mt-8 space-y-4 lg:scroll-mt-12">
+    <SectionHeader
+      title="Client Libraries"
+      description="Select a language to see the Supabase client and feature clients from the community GitHub profile."
+    />
+
+    <Tabs_Shadcn_ defaultValue={clientLibraries[0].language} className="overflow-hidden rounded-xl border">
+      <TabsList_Shadcn_ className="gap-5 overflow-x-auto border-0 border-b bg-surface-75 px-5">
+        {clientLibraries.map((clientLibrary) => (
+          <TabsTrigger_Shadcn_
+            key={clientLibrary.language}
+            value={clientLibrary.language}
+            className="px-0 py-2.5 text-xs data-[state=active]:bg-transparent"
+          >
+            {clientLibrary.language}
+          </TabsTrigger_Shadcn_>
+        ))}
+      </TabsList_Shadcn_>
+
+      {clientLibraries.map((clientLibrary) => (
+        <TabsContent_Shadcn_
+          key={clientLibrary.language}
+          value={clientLibrary.language}
+          className="m-0 bg-surface-75 p-5 data-[state=inactive]:hidden"
+          forceMount
+        >
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-medium tracking-[-0.03em] text-foreground">
+                {clientLibrary.language}
+              </h3>
+              <p className="text-sm text-foreground-lighter">
+                Libraries listed in the GitHub Client Libraries table.
+              </p>
+            </div>
+            <span className="rounded-full border px-2 py-0.5 text-xs text-foreground-light">
+              {clientLibrary.group}
+            </span>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {clientLibraryFeatures.map((feature) => (
+              <div key={feature} className="rounded-lg border bg-surface-100 p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-foreground-lighter">
+                  {feature}
+                </p>
+                <p className="mt-1 text-sm">
+                  <ClientLibraryLink name={clientLibrary.libraries[feature]} />
+                </p>
+              </div>
+            ))}
+          </div>
+        </TabsContent_Shadcn_>
+      ))}
+    </Tabs_Shadcn_>
+  </section>
+)
+
+const SelfHostedSection = () => (
+  <section id="self-hosted" className="scroll-mt-8 space-y-4 lg:scroll-mt-12">
+    <SectionHeader
+      title="Self-hosted"
+      description="Community repositories for running Supabase in your own infrastructure."
+    />
+
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {selfHostedProjects.map((project) => (
+        <a
+          key={project.name}
+          className="block rounded-lg border bg-surface-100 p-4 transition-colors hover:border-overlay-hover"
+          href={getCommunityRepoUrl(project.name)}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <h3 className="text-sm font-medium text-brand">{project.name}</h3>
+          <p className="mt-1 line-clamp-3 text-sm text-foreground-lighter">{project.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+)
+
+const UtilitiesSection = () => (
+  <section id="utilities" className="scroll-mt-8 space-y-4 lg:scroll-mt-12">
+    <SectionHeader
+      title="Utilities"
+      description="Community utility projects grouped by the headings from the GitHub profile."
+    />
+
+    <div className="grid gap-4 md:grid-cols-2">
+      {utilityGroups.map((group) => (
+        <div key={group.heading} className="rounded-lg border bg-surface-75 p-4">
+          <h3 className="text-sm font-medium text-foreground">{group.heading}</h3>
+          <div className="mt-3 grid gap-3">
+            {group.items.map((item) => (
+              <a
+                key={item.name}
+                className="block rounded-lg border bg-surface-100 p-4 transition-colors hover:border-overlay-hover"
+                href={getCommunityRepoUrl(item.name)}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <p className="text-sm font-medium text-brand">{item.name}</p>
+                {item.description && (
+                  <p className="mt-1 text-sm text-foreground-lighter">{item.description}</p>
+                )}
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+)
+
 const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) => {
   const { query } = useCommunityDocsSearch()
 
@@ -298,6 +734,10 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
         </Card>
       ) : (
         <div className="space-y-12 pt-6 lg:pt-0">
+          <ClientLibrariesSection />
+          <SelfHostedSection />
+          <UtilitiesSection />
+
           {filteredSections.map((section) => (
             <section
               id={getAreaId(section.category)}
