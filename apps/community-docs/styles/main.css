@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './../../../packages/ui/build/css/source/global.css';
+@import './../../../packages/ui/build/css/themes/dark.css';
+@import './../../../packages/ui/build/css/themes/light.css';
+
+@font-face {
+  font-family: 'custom-font';
+  src:
+    url(../../../packages/common/assets/fonts/CustomFont-Book.woff2) format('woff2'),
+    url(../../../packages/common/assets/fonts/CustomFont-Book.woff) format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'custom-font';
+  src:
+    url(../../../packages/common/assets/fonts/CustomFont-Medium.woff2) format('woff2'),
+    url(../../../packages/common/assets/fonts/CustomFont-Medium.woff) format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --header-height: 56px;
+}
+
+body {
+  @apply bg-background text-foreground;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: #6ee7b7;
+  color: #333;
+}

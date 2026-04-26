@@ -1,0 +1,14 @@
+import { CommunityDocsHome } from '@/components/CommunityDocsHome.client'
+import { getCommunityDocSections } from '@/lib/content'
+
+const HomePage = async () => {
+  const sections = await getCommunityDocSections()
+
+  return (
+    <main className="mx-auto w-full max-w-6xl px-6 py-16">
+      <CommunityDocsHome sections={sections} />
+    </main>
+  )
+}
+
+export default HomePage

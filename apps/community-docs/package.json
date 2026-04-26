@@ -1,0 +1,43 @@
+{
+  "name": "community-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "clean": "rimraf .next .turbo node_modules",
+    "dev": "next dev --port 3002",
+    "fetch-content": "tsx ./scripts/fetch-content.ts",
+    "lint": "eslint .",
+    "preinstall": "npx only-allow pnpm",
+    "pretypecheck": "next typegen",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mdx-js/react": "^3.0.0",
+    "@next/mdx": "15.3.1",
+    "config": "workspace:*",
+    "eslint-config-supabase": "workspace:*",
+    "gray-matter": "^4.0.3",
+    "next": "^15.5.15",
+    "next-mdx-remote": "^6.0.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "rehype-slug": "^5.1.0",
+    "remark-gfm": "^4.0.0",
+    "server-only": "^0.0.1",
+    "ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "postcss": "^8.5.3",
+    "tailwindcss": "catalog:",
+    "tsconfig": "workspace:*",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,331 @@
+import { execFile } from 'node:child_process'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { dirname, extname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { promisify } from 'node:util'
+
+const execFileAsync = promisify(execFile)
+
+const ORG = 'supabase-community'
+const appDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const contentDirectory = join(appDirectory, 'content')
+const maxBuffer = 1024 * 1024 * 50
+
+type RepoListItem = {
+  name: string
+  url: string
+  description?: string | null
+}
+
+type RepoDetails = {
+  default_branch: string
+  description?: string | null
+  html_url: string
+  name: string
+  topics?: string[]
+}
+
+type TreeResponse = {
+  tree?: Array<{
+    path?: string
+    type?: string
+  }>
+}
+
+type ContentResponse = {
+  content?: string
+  encoding?: string
+}
+
+type SourceDocument = {
+  label: string
+  content: string
+}
+
+type GeneratedDoc = {
+  title: string
+  description: string
+  repo: string
+  repoUrl: string
+  tags: string[]
+  category: string
+  content: string
+}
+
+const headingPattern = /^(#{1,3})\s+(Getting Started|Quickstart|Installation|Usage)\b.*$/gim
+
+const categoryKeywords = [
+  { category: 'Auth', keywords: ['auth', 'oauth', 'jwt', 'session', 'login', 'identity'] },
+  { category: 'Storage', keywords: ['storage', 'bucket', 'file', 'upload', 's3'] },
+  { category: 'Realtime', keywords: ['realtime', 'broadcast', 'presence', 'channel'] },
+  { category: 'Database', keywords: ['database', 'postgres', 'postgresql', 'sql', 'pg', 'vector'] },
+  {
+    category: 'Edge Functions',
+    keywords: ['edge function', 'edge-functions', 'function', 'deno', 'serverless'],
+  },
+]
+
+const tagKeywords = [
+  'auth',
+  'storage',
+  'realtime',
+  'database',
+  'postgres',
+  'functions',
+  'edge-functions',
+  'nextjs',
+  'react',
+  'vue',
+  'svelte',
+  'flutter',
+  'kotlin',
+  'swift',
+  'python',
+  'expo',
+  'stripe',
+]
+
+async function gh<T>(args: string[]): Promise<T> {
+  const token = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN
+  const env = token ? { ...process.env, GH_TOKEN: token } : process.env
+  const { stdout } = await execFileAsync('gh', args, { env, maxBuffer })
+
+  return JSON.parse(stdout) as T
+}
+
+async function ghText(args: string[]): Promise<string> {
+  const token = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN
+  const env = token ? { ...process.env, GH_TOKEN: token } : process.env
+  const { stdout } = await execFileAsync('gh', args, { env, maxBuffer })
+
+  return stdout
+}
+
+async function maybeGh<T>(args: string[]): Promise<T | undefined> {
+  try {
+    return await gh<T>(args)
+  } catch (error) {
+    console.warn(`Skipping failed gh command: gh ${args.join(' ')}`)
+    if (error instanceof Error) console.warn(error.message)
+    return undefined
+  }
+}
+
+function decodeBase64Content(response?: ContentResponse): string | undefined {
+  if (!response?.content || response.encoding !== 'base64') return undefined
+
+  return Buffer.from(response.content.replace(/\s/g, ''), 'base64').toString('utf-8')
+}
+
+async function listRepos(): Promise<RepoListItem[]> {
+  return gh<RepoListItem[]>([
+    'repo',
+    'list',
+    ORG,
+    '--visibility=public',
+    '--limit=1000',
+    '--json',
+    'name,url,description',
+  ])
+}
+
+async function getRepoDetails(repo: RepoListItem): Promise<RepoDetails | undefined> {
+  return maybeGh<RepoDetails>(['api', `repos/${ORG}/${repo.name}`])
+}
+
+async function getReadme(repo: string): Promise<string | undefined> {
+  const response = await maybeGh<ContentResponse>(['api', `repos/${ORG}/${repo}/readme`])
+
+  return decodeBase64Content(response)
+}
+
+async function getDocsFiles(repo: string, branch: string): Promise<SourceDocument[]> {
+  const tree = await maybeGh<TreeResponse>([
+    'api',
+    `repos/${ORG}/${repo}/git/trees/${branch}?recursive=1`,
+  ])
+  const paths =
+    tree?.tree
+      ?.filter((item) => item.type === 'blob' && item.path?.startsWith('docs/'))
+      .map((item) => item.path)
+      .filter((path): path is string => Boolean(path))
+      .filter((path) => ['.md', '.mdx'].includes(extname(path)))
+      .sort() ?? []
+
+  const documents: SourceDocument[] = []
+
+  for (const path of paths) {
+    const response = await maybeGh<ContentResponse>([
+      'api',
+      `repos/${ORG}/${repo}/contents/${encodeURI(path)}`,
+    ])
+    const content = decodeBase64Content(response)
+
+    if (content) documents.push({ label: path, content })
+  }
+
+  return documents
+}
+
+function extractGettingStartedSections(source: string): string[] {
+  const matches = [...source.matchAll(headingPattern)]
+  const sections: string[] = []
+
+  for (const match of matches) {
+    const start = match.index ?? 0
+    const level = match[1].length
+    const rest = source.slice(start + match[0].length)
+    const nextHeading = new RegExp(`^#{1,${level}}\\s+`, 'im').exec(rest)
+    const end =
+      nextHeading?.index === undefined ? source.length : start + match[0].length + nextHeading.index
+    const section = source.slice(start, end).trim()
+
+    if (section) sections.push(section)
+  }
+
+  return sections
+}
+
+function extractFirstParagraph(source: string): string | undefined {
+  const paragraph = source
+    .replace(/^---[\s\S]*?---/, '')
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .find(
+      (block) =>
+        block && !block.startsWith('#') && !block.startsWith('![') && !block.startsWith('[')
+    )
+
+  return paragraph?.replace(/\s+/g, ' ').slice(0, 180)
+}
+
+function humanizeRepoName(name: string): string {
+  return name
+    .replace(/^supabase[-_]/, '')
+    .split(/[-_]/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+}
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function inferCategory(repo: RepoDetails, content: string): string {
+  const haystack =
+    `${repo.name} ${repo.description ?? ''} ${repo.topics?.join(' ') ?? ''} ${content}`.toLowerCase()
+  const match = categoryKeywords.find(({ keywords }) =>
+    keywords.some((keyword) => haystack.includes(keyword))
+  )
+
+  return match?.category ?? 'Other'
+}
+
+function inferTags(repo: RepoDetails, content: string): string[] {
+  const haystack =
+    `${repo.name} ${repo.description ?? ''} ${repo.topics?.join(' ') ?? ''} ${content}`.toLowerCase()
+  const topicTags = repo.topics ?? []
+  const keywordTags = tagKeywords.filter((keyword) => haystack.includes(keyword))
+  const repoNameTags = repo.name
+    .split(/[-_]/)
+    .map(slugify)
+    .filter((tag) => tag && tag !== 'supabase' && tag.length > 2)
+
+  return [...new Set([...topicTags, ...keywordTags, ...repoNameTags])].slice(0, 8)
+}
+
+function toFrontmatter(doc: GeneratedDoc): string {
+  const tagLines =
+    doc.tags.length === 0
+      ? [`tags: []`]
+      : ['tags:', ...doc.tags.map((tag) => `  - ${JSON.stringify(tag)}`)]
+
+  return [
+    '---',
+    `title: ${JSON.stringify(doc.title)}`,
+    `description: ${JSON.stringify(doc.description)}`,
+    `repo: ${JSON.stringify(doc.repo)}`,
+    `repoUrl: ${JSON.stringify(doc.repoUrl)}`,
+    ...tagLines,
+    `category: ${JSON.stringify(doc.category)}`,
+    '---',
+  ].join('\n')
+}
+
+function buildGeneratedDoc(repo: RepoDetails, documents: SourceDocument[]): GeneratedDoc {
+  const combinedContent = documents.map((document) => document.content).join('\n\n')
+  const sections = documents.flatMap((document) =>
+    extractGettingStartedSections(document.content).map((section) => ({
+      label: document.label,
+      section,
+    }))
+  )
+  const description =
+    repo.description?.trim() ||
+    extractFirstParagraph(combinedContent) ||
+    `Getting started with ${repo.name}.`
+  const body =
+    sections.length > 0
+      ? sections.map(({ label, section }) => `<!-- Source: ${label} -->\n\n${section}`).join('\n\n')
+      : 'No getting-started sections were found in the README or docs directory for this repository.'
+
+  return {
+    title: humanizeRepoName(repo.name),
+    description,
+    repo: repo.name,
+    repoUrl: repo.html_url,
+    tags: inferTags(repo, combinedContent),
+    category: inferCategory(repo, combinedContent),
+    content: [
+      `> This page is generated from [${repo.name}](${repo.html_url}).`,
+      '',
+      '## Getting started',
+      '',
+      body,
+    ].join('\n'),
+  }
+}
+
+async function removeGeneratedContent() {
+  await mkdir(contentDirectory, { recursive: true })
+  const files = await readdir(contentDirectory)
+
+  await Promise.all(
+    files
+      .filter((file) => extname(file) === '.mdx')
+      .map((file) => rm(join(contentDirectory, file), { force: true }))
+  )
+}
+
+async function main() {
+  await ghText(['--version'])
+  await removeGeneratedContent()
+
+  const repos = await listRepos()
+
+  for (const repo of repos) {
+    const details = await getRepoDetails(repo)
+
+    if (!details) continue
+
+    const readme = await getReadme(repo.name)
+    const docsFiles = await getDocsFiles(repo.name, details.default_branch)
+    const documents = [...(readme ? [{ label: 'README.md', content: readme }] : []), ...docsFiles]
+
+    const generated = buildGeneratedDoc(details, documents)
+    const filename = `${slugify(repo.name)}.mdx`
+    const output = `${toFrontmatter(generated)}\n\n${generated.content}\n`
+
+    await writeFile(join(contentDirectory, filename), output)
+    console.log(`Generated content/${filename}`)
+  }
+}
+
+main().catch((error) => {
+  console.error(error)
+  process.exit(1)
+})
