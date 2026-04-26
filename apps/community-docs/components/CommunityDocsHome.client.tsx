@@ -47,6 +47,9 @@ const areas = [
   { label: 'Other', icon: 'other' },
 ] as const
 
+const getAreaIcon = (label: string) =>
+  areas.find((area) => area.label === label)?.icon ?? 'other'
+
 const featuredSections = [
   {
     label: 'Client Libraries',
@@ -528,7 +531,7 @@ const CommunityDocCard = ({ page }: { page: CommunityDocSummary }) => (
   <Link className="group block h-full" href={`/${page.slug}`}>
     <Card className="h-full transition-colors group-hover:border-overlay-hover">
       <CardHeader>
-        <CardTitle className="text-sm normal-case tracking-normal">
+        <CardTitle className="text-sm normal-case tracking-normal text-brand">
           {page.frontmatter.title}
         </CardTitle>
         <CardDescription>{page.frontmatter.description}</CardDescription>
@@ -546,11 +549,16 @@ const CommunityDocCard = ({ page }: { page: CommunityDocSummary }) => (
   </Link>
 )
 
-const PopularCard = ({ pages }: { pages: CommunityDocSummary[] }) => {
+const PopularCard = ({ pages, className }: { pages: CommunityDocSummary[]; className?: string }) => {
   if (pages.length === 0) return null
 
   return (
-    <aside className="rounded-xl border bg-surface-75 p-4 shadow-sm md:p-5 lg:-translate-y-8">
+    <aside
+      className={cn(
+        'rounded-xl border bg-surface-75 p-4 shadow-sm md:p-5 lg:-translate-y-8',
+        className
+      )}
+    >
       <div className="mb-4">
         <h2 className="text-xl font-medium tracking-[-0.03em] text-foreground">Popular</h2>
         <p className="text-sm text-foreground-lighter">
@@ -596,7 +604,7 @@ const PopularCard = ({ pages }: { pages: CommunityDocSummary[] }) => {
   )
 }
 
-const SectionDivider = () => <hr className="mb-8 mt-8 border-overlay" />
+const SectionDivider = () => <hr className="mb-16 mt-8 border-overlay" />
 
 const SectionHeader = ({
   title,
@@ -807,28 +815,43 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
     )
     .slice(0, 6)
   const resultCount = filteredSections.reduce((count, section) => count + section.pages.length, 0)
+  const totalGuideCount = sections.reduce((count, section) => count + section.pages.length, 0)
 
   return (
     <div>
-      <div className="grid gap-8 pb-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:pb-0">
-        <div className="flex h-full max-w-2xl flex-col gap-8 pt-6 lg:gap-10 lg:pb-12 lg:pt-10">
-          <div className="space-y-4">
+      <div className="grid gap-x-8 gap-y-3 pb-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:pb-0">
+        <div className="pt-6 lg:col-span-full lg:row-start-1 lg:pt-10">
+          <div className="max-w-2xl space-y-4">
             <h1 className="flex items-center gap-3 text-3xl font-medium tracking-[-0.04em] text-foreground md:text-4xl">
               <SupabaseMark className="h-8 w-8 text-foreground-lighter md:h-9 md:w-9" />
               <span>Supabase Community Docs</span>
             </h1>
             <p className="text-xl text-foreground-light">
-              Community-built integrations, examples, and getting-started guides.
+              <span className="box-decoration-clone rounded-sm bg-brand/70 px-3 py-0.5 text-background">
+                Community-built integrations, examples, and getting-started guides.
+              </span>
             </p>
           </div>
-
-          <div className="lg:pt-4">
-            <FeaturedSectionsNav />
-          </div>
-
-          <AreasNav />
+          <div className="relative left-1/2 my-[4.5rem] h-px w-screen -translate-x-1/2 bg-overlay" />
         </div>
-        <PopularCard pages={popularPages} />
+
+        <div className="max-w-2xl lg:col-start-1 lg:row-start-2">
+          <FeaturedSectionsNav />
+        </div>
+
+        <div className="max-w-2xl lg:col-start-1 lg:row-start-3">
+          <AreasNav />
+          {sections.length > 0 && (
+            <p className="mt-8 text-sm italic text-foreground-lighter">
+              Showing {resultCount} of {totalGuideCount} guides
+            </p>
+          )}
+        </div>
+
+        <PopularCard
+          className="relative z-10 lg:col-start-2 lg:row-span-3 lg:row-start-1"
+          pages={popularPages}
+        />
       </div>
 
       {filteredSections.length === 0 ? (
@@ -855,8 +878,11 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
             >
               <SectionDivider />
               <div className="flex items-end justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-medium tracking-[-0.03em] text-foreground">
+                <div className="space-y-1.5">
+                  <h2 className="flex items-center gap-3 text-2xl font-medium tracking-[-0.03em] text-foreground">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-md border bg-surface-100 text-brand">
+                      <AreaIcon icon={getAreaIcon(section.category)} />
+                    </span>
                     {section.category}
                   </h2>
                   <p className="text-sm text-foreground-lighter">
@@ -873,13 +899,6 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
             </section>
           ))}
         </div>
-      )}
-
-      {sections.length > 0 && (
-        <p className="text-sm text-foreground-lighter">
-          Showing {resultCount} of{' '}
-          {sections.reduce((count, section) => count + section.pages.length, 0)} guides
-        </p>
       )}
     </div>
   )
