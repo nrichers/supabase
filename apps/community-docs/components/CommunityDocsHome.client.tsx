@@ -585,7 +585,7 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
               </span>
             </p>
           </div>
-          <div className="relative left-1/2 mb-[3.75rem] mt-[4.5rem] h-px w-screen -translate-x-1/2 bg-overlay" />
+          <div className="relative left-1/2 mb-[2.75rem] mt-[4.5rem] h-px w-screen -translate-x-1/2 bg-overlay" />
         </div>
 
         <div className="max-w-2xl lg:col-start-1 lg:row-start-2 lg:-mt-12">
