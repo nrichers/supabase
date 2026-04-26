@@ -299,7 +299,11 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
       ) : (
         <div className="space-y-12 pt-6 lg:pt-0">
           {filteredSections.map((section) => (
-            <section id={getAreaId(section.category)} key={section.category} className="space-y-4">
+            <section
+              id={getAreaId(section.category)}
+              key={section.category}
+              className="scroll-mt-8 space-y-4 lg:scroll-mt-12"
+            >
               <div className="flex items-end justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-medium tracking-[-0.03em] text-foreground">
