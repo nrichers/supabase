@@ -596,10 +596,23 @@ const PopularCard = ({ pages }: { pages: CommunityDocSummary[] }) => {
   )
 }
 
-const SectionHeader = ({ title, description }: { title: string; description: string }) => (
-  <div>
-    <h2 className="text-2xl font-medium tracking-[-0.03em] text-foreground">{title}</h2>
-    <p className="text-sm text-foreground-lighter">{description}</p>
+const SectionDivider = () => <hr className="mb-8 mt-8 border-overlay" />
+
+const SectionHeader = ({
+  title,
+  description,
+  withDivider = false,
+}: {
+  title: string
+  description: string
+  withDivider?: boolean
+}) => (
+  <div className={cn(withDivider && 'space-y-4')}>
+    {withDivider && <SectionDivider />}
+    <div>
+      <h2 className="text-2xl font-medium tracking-[-0.03em] text-foreground">{title}</h2>
+      <p className="text-sm text-foreground-lighter">{description}</p>
+    </div>
   </div>
 )
 
@@ -625,6 +638,7 @@ const ClientLibrariesSection = () => (
     <SectionHeader
       title="Client Libraries"
       description="Select a language to see the Supabase client and feature clients from the community GitHub profile."
+      withDivider
     />
 
     <Tabs_Shadcn_ defaultValue={clientLibraries[0].language} className="overflow-hidden rounded-xl border">
@@ -839,6 +853,7 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
               key={section.category}
               className="scroll-mt-8 space-y-4 lg:scroll-mt-12"
             >
+              <SectionDivider />
               <div className="flex items-end justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-medium tracking-[-0.03em] text-foreground">
