@@ -33,7 +33,7 @@ type CommunityDocSection = {
   pages: CommunityDocSummary[]
 }
 
-const categoryOrder = ['Auth', 'Storage', 'Realtime', 'Database', 'Edge Functions', 'Other']
+const categoryOrder = ['Database', 'Auth', 'Storage', 'Realtime', 'Edge Functions', 'Other']
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
