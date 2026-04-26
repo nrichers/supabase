@@ -4,7 +4,7 @@ module.exports = config({
   content: [
     './app/**/*.{ts,tsx,mdx}',
     './components/**/*.{ts,tsx}',
-    './content/**/*.{mdx}',
+    './content/**/*.mdx',
     './lib/**/*.{ts,tsx}',
     './../../packages/ui/src/**/*.{tsx,ts,js}',
   ],
