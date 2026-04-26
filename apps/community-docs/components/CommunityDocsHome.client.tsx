@@ -646,26 +646,32 @@ const UtilitiesSection = () => (
       description="Community utility projects grouped by the headings from the GitHub profile."
     />
 
-    <div className="grid gap-4 md:grid-cols-2">
-      {utilityGroups.map((group) => (
-        <div key={group.heading} className="rounded-lg border bg-surface-75 p-4">
-          <h3 className="text-sm font-medium text-foreground">{group.heading}</h3>
-          <div className="mt-3 grid gap-3">
-            {group.items.map((item) => (
-              <a
-                key={item.name}
-                className="block rounded-lg border bg-surface-100 p-4 transition-colors hover:border-overlay-hover"
-                href={getCommunityRepoUrl(item.name)}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <p className="text-sm font-medium text-brand">{item.name}</p>
-                {item.description && (
-                  <p className="mt-1 text-sm text-foreground-lighter">{item.description}</p>
-                )}
-              </a>
+    <div className="grid gap-4 md:grid-cols-2 md:items-start">
+      {[0, 1].map((columnIndex) => (
+        <div key={columnIndex} className="grid gap-4">
+          {utilityGroups
+            .filter((_, index) => index % 2 === columnIndex)
+            .map((group) => (
+              <div key={group.heading} className="rounded-lg border bg-surface-75 p-4">
+                <h3 className="text-sm font-medium text-foreground">{group.heading}</h3>
+                <div className="mt-3 grid gap-3">
+                  {group.items.map((item) => (
+                    <a
+                      key={item.name}
+                      className="block rounded-lg border bg-surface-100 p-4 transition-colors hover:border-overlay-hover"
+                      href={getCommunityRepoUrl(item.name)}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <p className="text-sm font-medium text-brand">{item.name}</p>
+                      {item.description && (
+                        <p className="mt-1 text-sm text-foreground-lighter">{item.description}</p>
+                      )}
+                    </a>
+                  ))}
+                </div>
+              </div>
             ))}
-          </div>
         </div>
       ))}
     </div>
