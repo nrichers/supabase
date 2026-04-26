@@ -77,6 +77,8 @@ const featuredSections = [
   },
 ] as const
 
+const mutedHeadingClassName = 'text-xl font-medium tracking-[-0.03em] text-foreground-light'
+
 function getAreaId(label: string) {
   return label
     .toLowerCase()
@@ -183,7 +185,7 @@ const FeaturedSectionsNav = () => (
     <div className="mb-5 space-y-1.5">
       <h2
         id="community-docs-featured-sections-heading"
-        className="text-xl font-medium tracking-[-0.03em] text-foreground"
+        className={mutedHeadingClassName}
       >
         Community resources
       </h2>
@@ -209,7 +211,7 @@ const AreasNav = () => (
     <div className="mb-5 space-y-1.5">
       <h2
         id="community-docs-areas-heading"
-        className="text-xl font-medium tracking-[-0.03em] text-foreground"
+        className={mutedHeadingClassName}
       >
         Areas
       </h2>
@@ -265,7 +267,7 @@ const PopularCard = ({ pages, className }: { pages: CommunityDocSummary[]; class
       )}
     >
       <div className="mb-5 space-y-1.5">
-        <h2 className="text-xl font-medium tracking-[-0.03em] text-foreground">Popular</h2>
+        <h2 className={mutedHeadingClassName}>Popular</h2>
         <p className="text-sm text-foreground-lighter">
           Start with highlighted community projects.
         </p>
@@ -323,7 +325,7 @@ const SectionHeader = ({
   <div className={cn(withDivider && 'space-y-4')}>
     {withDivider && <SectionDivider />}
     <div>
-      <h2 className="text-2xl font-medium tracking-[-0.03em] text-foreground">{title}</h2>
+      <h2 className={mutedHeadingClassName}>{title}</h2>
       <p className="text-sm text-foreground-lighter">{description}</p>
     </div>
   </div>
@@ -632,7 +634,7 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
               <SectionDivider />
               <div className="flex items-end justify-between gap-4">
                 <div className="space-y-1.5">
-                  <h2 className="flex items-center gap-3 text-2xl font-medium tracking-[-0.03em] text-foreground">
+                  <h2 className={cn('flex items-center gap-3', mutedHeadingClassName)}>
                     <span className="flex h-8 w-8 items-center justify-center rounded-md border bg-surface-100 text-brand">
                       <AreaIcon icon={getAreaIcon(section.category)} />
                     </span>
