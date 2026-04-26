@@ -832,14 +832,14 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
               </span>
             </p>
           </div>
-          <div className="relative left-1/2 my-[4.5rem] h-px w-screen -translate-x-1/2 bg-overlay" />
+          <div className="relative left-1/2 mb-[3.75rem] mt-[4.5rem] h-px w-screen -translate-x-1/2 bg-overlay" />
         </div>
 
-        <div className="max-w-2xl lg:col-start-1 lg:row-start-2">
+        <div className="max-w-2xl lg:col-start-1 lg:row-start-2 lg:-mt-12">
           <FeaturedSectionsNav />
         </div>
 
-        <div className="max-w-2xl lg:col-start-1 lg:row-start-3">
+        <div className="max-w-2xl lg:col-start-1 lg:row-start-3 lg:-mt-12">
           <AreasNav />
           {sections.length > 0 && (
             <p className="mt-8 text-sm italic text-foreground-lighter">
