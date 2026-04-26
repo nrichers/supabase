@@ -1,19 +1,19 @@
 ---
-title: "Storage Rs"
-description: "This is a Rust implementation of the [supabase storage client](https://supabase.com/docs/reference/javascript/storage-createbucket). The goal is to have feature parity and an easy-"
-repo: "storage-rs"
-repoUrl: "https://github.com/supabase-community/storage-rs"
+title: 'Storage Rs'
+description: 'This is a Rust implementation of the [supabase storage client](https://supabase.com/docs/reference/javascript/storage-createbucket). The goal is to have feature parity and an easy-'
+repo: 'storage-rs'
+repoUrl: 'https://github.com/supabase-community/storage-rs'
 tags:
-  - "auth"
-  - "storage"
-category: "Auth"
+  - 'auth'
+  - 'storage'
+category: 'Auth'
 ---
 
 > This page is generated from [storage-rs](https://github.com/supabase-community/storage-rs).
 
 ## Getting started
 
-<!-- Source: README.md -->
+{/* Source: README.md */}
 
 ## Installation
 
@@ -23,11 +23,12 @@ category: "Auth"
 cargo add supabase-storage-rs
 ```
 
-<!-- Source: README.md -->
+{/* Source: README.md */}
 
 ## Usage
 
 ### Create a Storage Client
+
 ```rust
 // You can manually pass in the values
 let auth_client = StorageClient::new(project_url, api_key).unwrap();
@@ -107,9 +108,9 @@ let options = FileSearchOptions {
 
 client
    .list_files(
-       "bucket_id", 
+       "bucket_id",
        "folder/",   // Path prefix to search
-       Some(options) 
+       Some(options)
    )
    .await
    .unwrap();
@@ -281,9 +282,9 @@ let url = client
 
 // With image transformation
 let options = DownloadOptions {
-   transform: Some(Transform { 
+   transform: Some(Transform {
        width: 300,
-       ..Default::default() 
+       ..Default::default()
    }),
    download: Some(true)
 };

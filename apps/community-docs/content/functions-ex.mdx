@@ -1,20 +1,20 @@
 ---
-title: "Functions Ex"
-description: "Elixir library to interact with Supabase Edge Functions"
-repo: "functions-ex"
-repoUrl: "https://github.com/supabase-community/functions-ex"
+title: 'Functions Ex'
+description: 'Elixir library to interact with Supabase Edge Functions'
+repo: 'functions-ex'
+repoUrl: 'https://github.com/supabase-community/functions-ex'
 tags:
-  - "elixir"
-  - "supabase-functions"
-  - "functions"
-category: "Storage"
+  - 'elixir'
+  - 'supabase-functions'
+  - 'functions'
+category: 'Storage'
 ---
 
 > This page is generated from [functions-ex](https://github.com/supabase-community/functions-ex).
 
 ## Getting started
 
-<!-- Source: README.md -->
+{/* Source: README.md */}
 
 ## Installation
 
@@ -27,7 +27,7 @@ def deps do
 end
 ```
 
-<!-- Source: README.md -->
+{/* Source: README.md */}
 
 ## Usage
 
@@ -36,10 +36,10 @@ Given a simple Edge Function that simply echos a raw string:
 ```ts
 // simple-text/index.ts
 Deno.serve(async (req) => {
-  return new Response("Hello from Deno!", {
-    headers: { "Content-Type": "text/plain" }
-  });
-});
+  return new Response('Hello from Deno!', {
+    headers: { 'Content-Type': 'text/plain' },
+  })
+})
 ```
 
 From your Elixir server, after having started your `Supabase.Client` yo ucan inke this function as
@@ -48,3 +48,4 @@ From your Elixir server, after having started your `Supabase.Client` yo ucan ink
 client = Supabase.init_client!("SUPABASE_URl", "SUPABASE_KEY")
 
 Supabase.Functions.invoke(client, "simple-text")
+```

@@ -1,9 +1,8 @@
-import { MDXRemote } from 'next-mdx-remote/rsc'
 import Link from 'next/link'
-import type { AnchorHTMLAttributes, HTMLAttributes } from 'react'
-import rehypeSlug from 'rehype-slug'
+import type { AnchorHTMLAttributes, ComponentProps, HTMLAttributes } from 'react'
+import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { Badge, Button, cn } from 'ui'
+import { cn } from 'ui'
 
 const MdxLink = ({ href = '', children, ...props }: AnchorHTMLAttributes<HTMLAnchorElement>) => {
   if (href.startsWith('http')) {
@@ -26,25 +25,23 @@ const Pre = ({ className, ...props }: HTMLAttributes<HTMLPreElement>) => {
   )
 }
 
-const components = {
-  a: MdxLink,
-  Badge,
-  Button,
-  pre: Pre,
+const Code = ({ className, ...props }: HTMLAttributes<HTMLElement>) => {
+  return <code className={cn('rounded bg-surface-200 px-1 py-0.5', className)} {...props} />
 }
 
+const components = {
+  a: MdxLink,
+  code: Code,
+  pre: Pre,
+} satisfies ComponentProps<typeof ReactMarkdown>['components']
+
 const MdxContent = ({ source }: { source: string }) => {
+  const markdown = source.replace(/^\{\/\* Source: .* \*\/\}\s*$/gm, '')
+
   return (
-    <MDXRemote
-      source={source}
-      components={components}
-      options={{
-        mdxOptions: {
-          remarkPlugins: [remarkGfm],
-          rehypePlugins: [rehypeSlug as never],
-        },
-      }}
-    />
+    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
+      {markdown}
+    </ReactMarkdown>
   )
 }
 

@@ -1,25 +1,25 @@
 ---
-title: "Postgres Language Server"
-description: "A Language Server for Postgres"
-repo: "postgres-language-server"
-repoUrl: "https://github.com/supabase-community/postgres-language-server"
+title: 'Postgres Language Server'
+description: 'A Language Server for Postgres'
+repo: 'postgres-language-server'
+repoUrl: 'https://github.com/supabase-community/postgres-language-server'
 tags:
-  - "language-server-protocol"
-  - "postgres"
-  - "auth"
-  - "storage"
-  - "realtime"
-  - "database"
-  - "functions"
-  - "swift"
-category: "Auth"
+  - 'language-server-protocol'
+  - 'postgres'
+  - 'auth'
+  - 'storage'
+  - 'realtime'
+  - 'database'
+  - 'functions'
+  - 'swift'
+category: 'Auth'
 ---
 
 > This page is generated from [postgres-language-server](https://github.com/supabase-community/postgres-language-server).
 
 ## Getting started
 
-<!-- Source: docs/getting_started.md -->
+{/* Source: docs/getting_started.md */}
 
 # Getting Started
 
@@ -43,7 +43,7 @@ postgres-language-server init
 
 You’ll now have a `postgres-language-server.jsonc` file in your directory:
 
-[//]: # "BEGIN DEFAULT_CONFIGURATION"
+[//]: # 'BEGIN DEFAULT_CONFIGURATION'
 
 ```json
 {
@@ -74,7 +74,7 @@ You’ll now have a `postgres-language-server.jsonc` file in your directory:
 }
 ```
 
-[//]: # "END DEFAULT_CONFIGURATION"
+[//]: # 'END DEFAULT_CONFIGURATION'
 
 Make sure to edit the database connection settings to connect to your local development database. To see all options, run `postgres-language-server --help`.
 
@@ -88,9 +88,9 @@ Lets get a quick overview of how to use the Postgres Language Server in your pro
 
 The CLI exposes a `check` command that will run all checks on the given files or paths.
 
-```sh
+````sh
 
-<!-- Source: docs/getting_started.md -->
+{/* Source: docs/getting_started.md */}
 
 ## Usage
 
@@ -102,7 +102,7 @@ The CLI exposes a `check` command that will run all checks on the given files or
 
 ```sh
 
-<!-- Source: docs/guides/ide_setup.md -->
+{/* Source: docs/guides/ide_setup.md */}
 
 ### Installation via Mason (Recommended)
 
@@ -110,7 +110,7 @@ The easiest way to install the language server is via [Mason](https://github.com
 
 ```vim
 :MasonInstall postgres-language-server
-```
+````
 
 Then configure `nvim-lspconfig` to use it:
 

@@ -24,7 +24,7 @@ const viewport: Viewport = {
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html lang="en">
+    <html lang="en" className="dark" data-theme="dark">
       <body>
         <TopNav />
         {children}

@@ -238,6 +238,28 @@ function inferTags(repo: RepoDetails, content: string): string[] {
   return [...new Set([...topicTags, ...keywordTags, ...repoNameTags])].slice(0, 8)
 }
 
+function sanitizeMdxLine(line: string): string {
+  return line
+    .replace(/<!--(.*?)-->/g, (_, comment: string) => `{/*${comment.replace(/\*\//g, '* /')}*/}`)
+    .replace(/<([A-Za-z][A-Za-z0-9_-]*(?:[-_][A-Za-z0-9_-]+|[A-Z0-9_]{2,}))>/g, '\\<$1>')
+}
+
+function sanitizeMdxContent(source: string): string {
+  let isInCodeFence = false
+
+  return source
+    .split('\n')
+    .map((line) => {
+      if (/^\s*(```|~~~)/.test(line)) {
+        isInCodeFence = !isInCodeFence
+        return line
+      }
+
+      return isInCodeFence ? line : sanitizeMdxLine(line)
+    })
+    .join('\n')
+}
+
 function toFrontmatter(doc: GeneratedDoc): string {
   const tagLines =
     doc.tags.length === 0
@@ -270,7 +292,12 @@ function buildGeneratedDoc(repo: RepoDetails, documents: SourceDocument[]): Gene
     `Getting started with ${repo.name}.`
   const body =
     sections.length > 0
-      ? sections.map(({ label, section }) => `<!-- Source: ${label} -->\n\n${section}`).join('\n\n')
+      ? sections
+          .map(
+            ({ label, section }) =>
+              `{/* Source: ${label.replace(/\*\//g, '* /')} */}\n\n${sanitizeMdxContent(section)}`
+          )
+          .join('\n\n')
       : 'No getting-started sections were found in the README or docs directory for this repository.'
 
   return {

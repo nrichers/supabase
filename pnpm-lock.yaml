@@ -177,15 +177,15 @@ importers:
       next:
         specifier: ^15.5.15
         version: 15.5.15(@babel/core@7.29.0(supports-color@8.1.1))(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.4)
-      next-mdx-remote:
-        specifier: ^6.0.0
-        version: 6.0.0(@types/react@18.3.3)(react@18.3.1)(supports-color@8.1.1)
       react:
         specifier: 'catalog:'
         version: 18.3.1
       react-dom:
         specifier: 'catalog:'
         version: 18.3.1(react@18.3.1)
+      react-markdown:
+        specifier: ^10.1.0
+        version: 10.1.0(@types/react@18.3.3)(react@18.3.1)(supports-color@8.1.1)
       rehype-slug:
         specifier: ^5.1.0
         version: 5.1.0

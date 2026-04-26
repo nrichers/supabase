@@ -1,0 +1,111 @@
+---
+title: 'Realtime Swift'
+description: 'A Swift client for Supabase Realtime server.'
+repo: 'realtime-swift'
+repoUrl: 'https://github.com/supabase-community/realtime-swift'
+tags:
+  - 'realtime'
+  - 'database'
+  - 'postgres'
+  - 'swift'
+category: 'Realtime'
+---
+
+> This page is generated from [realtime-swift](https://github.com/supabase-community/realtime-swift).
+
+## Getting started
+
+{/* Source: README.md */}
+
+## Usage
+
+### Creating a Socket connection
+
+You can set up one connection to be used across the whole app.
+
+```swift
+import Realtime
+
+var client = RealtimeClient(endPoint: "https://yourcompany.supabase.co/realtime/v1", params: ["apikey": "public-anon-key"])
+client.connect()
+```
+
+**Socket Hooks**
+
+```swift
+client.onOpen {
+    print("Socket opened.")
+}
+
+client.onError { error in
+    print("Socket error: ", error.localizedDescription)
+}
+
+client.onClose {
+    print("Socket closed")
+}
+```
+
+**Disconnect the socket**
+
+Call `disconnect()` on the socket:
+
+```swift
+client.disconnect()
+```
+
+### Subscribe to topics
+
+You can subscribe to all topic, or to specific schema parts.
+
+- Listen to all database changes:
+
+```swift
+let allChanges = client.channel(.all)
+allChanges.on(.all) { message in
+    print(message)
+}
+allChanges.subscribe()
+// ...
+allChanges.unsubscribe()
+allChanges.off(.all)
+```
+
+- Listen to a specific schema's changes:
+
+```swift
+let allPublicInsertChanges = client.channel(.schema("public"))
+allPublicInsertChanges.on(.insert) { message in
+    print(message)
+}
+allPublicInsertChanges.subscribe()
+// ...
+allPublicInsertChanges.unsubscribe()
+allPublicInsertChanges.off(.insert)
+```
+
+- Listen to a specific table's changes:
+
+```swift
+let allUsersUpdateChanges = client.channel(.table("users", schema: "public"))
+allUsersUpdateChanges.on(.update) { message in
+    print(message)
+}
+allUsersUpdateChanges.subscribe()
+// ...
+allUsersUpdateChanges.unsubscribe()
+allUsersUpdateChanges.off(.update)
+```
+
+- Listen to a specific column's value changes:
+
+```swift
+let allUserId99Changes = client.channel(.column("id", value: "99", table: "users", schema: "public"))
+allUserId99Changes.on(.all){ message in
+    print(message)
+}
+allUserId99Changes.subscribe()
+// ...
+allUserId99Changes.unsubscribe()
+allUserId99Changes.off(.all)
+```
