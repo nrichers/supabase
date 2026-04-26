@@ -145,7 +145,7 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
             <span>Supabase Community Docs</span>
           </h1>
           <p className="text-xl text-foreground-light">
-            Community-built integrations, examples, and getting-started guides
+            Community-built integrations, examples, and getting-started guides.
           </p>
         </div>
         <PopularCard pages={popularPages} />

@@ -15,10 +15,10 @@ const metadata: Metadata = {
   metadataBase: new URL('https://supabase.com'),
   icons: {
     icon: {
-      url: 'https://supabase.com/docs/favicon/favicon.ico',
+      url: '/community-docs/favicon.ico?v=docs',
       type: 'image/x-icon',
     },
-    shortcut: 'https://supabase.com/docs/favicon/favicon.ico',
+    shortcut: '/community-docs/favicon.ico?v=docs',
   },
   robots: {
     index: false,
