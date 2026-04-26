@@ -2,6 +2,7 @@ import '../styles/main.css'
 
 import type { Metadata, Viewport } from 'next'
 
+import { CommunityDocsSearchProvider } from '@/components/CommunityDocsSearchProvider.client'
 import { TopNav } from '@/components/TopNav'
 
 const metadata: Metadata = {
@@ -26,8 +27,10 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en" className="dark" data-theme="dark">
       <body>
-        <TopNav />
-        {children}
+        <CommunityDocsSearchProvider>
+          <TopNav />
+          {children}
+        </CommunityDocsSearchProvider>
       </body>
     </html>
   )

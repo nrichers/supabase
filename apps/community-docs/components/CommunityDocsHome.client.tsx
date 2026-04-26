@@ -1,22 +1,37 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  cn,
-  Input_Shadcn_ as Input,
-} from 'ui'
+import { useMemo } from 'react'
+import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, cn } from 'ui'
 
-import type { CommunityDocSection } from '@/lib/content'
+import { useCommunityDocsSearch } from '@/components/CommunityDocsSearchProvider.client'
+import { SupabaseMark } from '@/components/TopNav'
+import type { CommunityDocSection, CommunityDocSummary } from '@/lib/content'
+
+const CommunityDocCard = ({ page }: { page: CommunityDocSummary }) => (
+  <Link className="group block h-full" href={`/${page.slug}`}>
+    <Card className="h-full transition-colors group-hover:border-overlay-hover">
+      <CardHeader>
+        <CardTitle className="text-sm normal-case tracking-normal">
+          {page.frontmatter.title}
+        </CardTitle>
+        <CardDescription>{page.frontmatter.description}</CardDescription>
+      </CardHeader>
+      {page.frontmatter.tags.length > 0 && (
+        <CardContent className="flex flex-wrap gap-2 border-none">
+          {page.frontmatter.tags.map((tag) => (
+            <Badge key={tag} className={cn('normal-case tracking-normal')}>
+              {tag}
+            </Badge>
+          ))}
+        </CardContent>
+      )}
+    </Card>
+  </Link>
+)
 
 const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) => {
-  const [query, setQuery] = useState('')
+  const { query } = useCommunityDocsSearch()
 
   const filteredSections = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -38,26 +53,21 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
       .filter((section) => section.pages.length > 0)
   }, [query, sections])
 
+  const filteredPages = filteredSections.flatMap((section) => section.pages)
+  const popularPages = filteredPages.slice(0, 6)
   const resultCount = filteredSections.reduce((count, section) => count + section.pages.length, 0)
 
   return (
     <div className="space-y-12">
-      <div className="max-w-2xl space-y-6">
+      <div className="max-w-2xl space-y-4">
         <div className="space-y-4">
-          <h1 className="text-4xl font-medium tracking-[-0.04em] text-foreground md:text-5xl">
-            Supabase Community Docs
+          <h1 className="flex items-center gap-3 text-3xl font-medium tracking-[-0.04em] text-foreground md:text-4xl">
+            <SupabaseMark className="h-8 w-8 text-foreground-lighter md:h-9 md:w-9" />
+            <span>Supabase Community Docs</span>
           </h1>
           <p className="text-xl text-foreground-light">
             Community-built integrations, examples, and getting-started guides
           </p>
-        </div>
-        <div className="max-w-xl">
-          <Input
-            aria-label="Search community docs"
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search by title or tag"
-            value={query}
-          />
         </div>
       </div>
 
@@ -73,6 +83,23 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
         </Card>
       ) : (
         <div className="space-y-12">
+          {popularPages.length > 0 && (
+            <section className="rounded-xl border bg-surface-75 p-4 shadow-sm md:p-6">
+              <div className="mb-5">
+                <h2 className="text-xl font-medium tracking-[-0.03em] text-foreground">Popular</h2>
+                <p className="text-sm text-foreground-lighter">
+                  Start with a few highlighted community projects.
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {popularPages.map((page) => (
+                  <CommunityDocCard key={page.slug} page={page} />
+                ))}
+              </div>
+            </section>
+          )}
+
           {filteredSections.map((section) => (
             <section key={section.category} className="space-y-4">
               <div className="flex items-end justify-between gap-4">
@@ -88,25 +115,7 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
 
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {section.pages.map((page) => (
-                  <Link key={page.slug} className="group block h-full" href={`/${page.slug}`}>
-                    <Card className="h-full transition-colors group-hover:border-overlay-hover">
-                      <CardHeader>
-                        <CardTitle className="text-sm normal-case tracking-normal">
-                          {page.frontmatter.title}
-                        </CardTitle>
-                        <CardDescription>{page.frontmatter.description}</CardDescription>
-                      </CardHeader>
-                      {page.frontmatter.tags.length > 0 && (
-                        <CardContent className="flex flex-wrap gap-2 border-none">
-                          {page.frontmatter.tags.map((tag) => (
-                            <Badge key={tag} className={cn('normal-case tracking-normal')}>
-                              {tag}
-                            </Badge>
-                          ))}
-                        </CardContent>
-                      )}
-                    </Card>
-                  </Link>
+                  <CommunityDocCard key={page.slug} page={page} />
                 ))}
               </div>
             </section>

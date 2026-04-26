@@ -1,10 +1,14 @@
-import Link from 'next/link'
-import { cn } from 'ui'
+'use client'
 
-const SupabaseMark = () => (
+import Link from 'next/link'
+import { cn, IconGitHubSolid, Input_Shadcn_ as Input } from 'ui'
+
+import { useCommunityDocsSearch } from '@/components/CommunityDocsSearchProvider.client'
+
+const SupabaseMark = ({ className }: { className?: string }) => (
   <svg
     aria-hidden="true"
-    className="h-5 w-5 text-brand"
+    className={cn('h-5 w-5 text-brand', className)}
     fill="none"
     viewBox="0 0 109 113"
     xmlns="http://www.w3.org/2000/svg"
@@ -26,6 +30,8 @@ const SupabaseMark = () => (
 )
 
 const TopNav = ({ className }: { className?: string }) => {
+  const { query, setQuery } = useCommunityDocsSearch()
+
   return (
     <header
       className={cn(
@@ -34,23 +40,33 @@ const TopNav = ({ className }: { className?: string }) => {
       )}
     >
       <nav className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-3 text-sm font-medium">
+        <Link href="/" className="flex shrink-0 items-center gap-3 text-sm font-medium">
           <SupabaseMark />
           <span className="text-foreground">Supabase</span>
           <span className="h-4 w-px bg-border" />
           <span className="text-foreground-light">Community Docs</span>
         </Link>
-        <a
-          className="text-sm text-foreground-light transition-colors hover:text-foreground"
-          href="https://github.com/supabase-community"
-          rel="noreferrer"
-          target="_blank"
-        >
-          GitHub
-        </a>
+        <div className="flex flex-1 items-center justify-end gap-3 pl-6">
+          <Input
+            aria-label="Search community docs"
+            className="hidden w-full max-w-xs sm:block"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search by title or tag"
+            value={query}
+          />
+          <a
+            aria-label="View supabase-community on GitHub"
+            className="text-foreground-light transition-colors hover:text-foreground"
+            href="https://github.com/supabase-community"
+            rel="noreferrer"
+            target="_blank"
+          >
+            <IconGitHubSolid className="h-5 w-5" />
+          </a>
+        </div>
       </nav>
     </header>
   )
 }
 
-export { TopNav }
+export { SupabaseMark, TopNav }
