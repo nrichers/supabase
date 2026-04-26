@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import {
   Badge,
   Card,
@@ -18,11 +18,20 @@ import {
 
 import { useCommunityDocsSearch } from '@/components/CommunityDocsSearchProvider.client'
 import { SupabaseMark } from '@/components/TopNav'
+import {
+  clientLibraries,
+  clientLibraryFeatures,
+  getGitHubResourceUrl,
+  selfHostedProjects,
+  utilityGroups,
+} from '@/lib/community-resources'
 import type { CommunityDocSection, CommunityDocSummary } from '@/lib/content'
 
 type AreaIconProps = {
   className?: string
 }
+
+type ResourceSlugByName = Map<string, string>
 
 const languageColorByName: Record<string, string> = {
   JavaScript: 'bg-yellow-500',
@@ -68,302 +77,6 @@ const featuredSections = [
   },
 ] as const
 
-const clientLibraryFeatures = [
-  'Supabase',
-  'PostgREST',
-  'Auth',
-  'Realtime',
-  'Storage',
-  'Edge Runtime',
-] as const
-
-type ClientLibraryFeature = (typeof clientLibraryFeatures)[number]
-
-type ClientLibrary = {
-  language: string
-  group: 'Official' | 'Community'
-  libraries: Record<ClientLibraryFeature, string | null>
-}
-
-const clientLibraries: ClientLibrary[] = [
-  {
-    language: 'JavaScript (TypeScript)',
-    group: 'Official',
-    libraries: {
-      Supabase: 'supabase-js',
-      PostgREST: 'postgrest-js',
-      Auth: 'auth-js',
-      Realtime: 'realtime-js',
-      Storage: 'storage-js',
-      'Edge Runtime': 'functions-js',
-    },
-  },
-  {
-    language: 'Flutter',
-    group: 'Official',
-    libraries: {
-      Supabase: 'supabase-flutter',
-      PostgREST: 'postgrest-dart',
-      Auth: 'gotrue-dart',
-      Realtime: 'realtime-dart',
-      Storage: 'storage-dart',
-      'Edge Runtime': 'functions-dart',
-    },
-  },
-  {
-    language: 'Swift',
-    group: 'Official',
-    libraries: {
-      Supabase: 'supabase-swift',
-      PostgREST: 'postgrest-swift',
-      Auth: 'auth-swift',
-      Realtime: 'realtime-swift',
-      Storage: 'storage-swift',
-      'Edge Runtime': 'functions-swift',
-    },
-  },
-  {
-    language: 'Python',
-    group: 'Official',
-    libraries: {
-      Supabase: 'supabase-py',
-      PostgREST: 'postgrest-py',
-      Auth: 'auth-py',
-      Realtime: 'realtime-py',
-      Storage: 'storage-py',
-      'Edge Runtime': 'functions-py',
-    },
-  },
-  {
-    language: 'C#',
-    group: 'Community',
-    libraries: {
-      Supabase: 'supabase-csharp',
-      PostgREST: 'postgrest-csharp',
-      Auth: 'gotrue-csharp',
-      Realtime: 'realtime-csharp',
-      Storage: 'storage-csharp',
-      'Edge Runtime': 'functions-csharp',
-    },
-  },
-  {
-    language: 'F#',
-    group: 'Community',
-    libraries: {
-      Supabase: 'supabase-fsharp',
-      PostgREST: 'postgrest-fsharp',
-      Auth: 'gotrue-fsharp',
-      Realtime: null,
-      Storage: 'storage-fsharp',
-      'Edge Runtime': 'functions-fsharp',
-    },
-  },
-  {
-    language: 'Go',
-    group: 'Community',
-    libraries: {
-      Supabase: null,
-      PostgREST: 'postgrest-go',
-      Auth: 'auth-go',
-      Realtime: null,
-      Storage: 'storage-go',
-      'Edge Runtime': 'functions-go',
-    },
-  },
-  {
-    language: 'Elixir',
-    group: 'Community',
-    libraries: {
-      Supabase: 'supabase-ex',
-      PostgREST: 'postgrest-ex',
-      Auth: 'auth-ex',
-      Realtime: 'realtime-ex',
-      Storage: 'storage-ex',
-      'Edge Runtime': 'functions-ex',
-    },
-  },
-  {
-    language: 'Java',
-    group: 'Community',
-    libraries: {
-      Supabase: null,
-      PostgREST: null,
-      Auth: 'gotrue-java',
-      Realtime: null,
-      Storage: 'storage-java',
-      'Edge Runtime': null,
-    },
-  },
-  {
-    language: 'Kotlin',
-    group: 'Community',
-    libraries: {
-      Supabase: 'supabase-kt',
-      PostgREST: 'postgrest-kt',
-      Auth: 'auth-kt',
-      Realtime: 'realtime-kt',
-      Storage: 'storage-kt',
-      'Edge Runtime': 'functions-kt',
-    },
-  },
-  {
-    language: 'PHP',
-    group: 'Community',
-    libraries: {
-      Supabase: 'supabase-php',
-      PostgREST: 'postgrest-php',
-      Auth: 'gotrue-php',
-      Realtime: 'realtime-php',
-      Storage: 'storage-php',
-      'Edge Runtime': 'functions-php',
-    },
-  },
-  {
-    language: 'Ruby',
-    group: 'Community',
-    libraries: {
-      Supabase: 'supabase-rb',
-      PostgREST: 'postgrest-rb',
-      Auth: null,
-      Realtime: null,
-      Storage: null,
-      'Edge Runtime': null,
-    },
-  },
-  {
-    language: 'Rust',
-    group: 'Community',
-    libraries: {
-      Supabase: null,
-      PostgREST: 'postgrest-rs',
-      Auth: 'auth-rs',
-      Realtime: null,
-      Storage: null,
-      'Edge Runtime': null,
-    },
-  },
-  {
-    language: 'Godot Engine (GDScript)',
-    group: 'Community',
-    libraries: {
-      Supabase: 'supabase-gdscript',
-      PostgREST: 'postgrest-gdscript',
-      Auth: 'gotrue-gdscript',
-      Realtime: 'realtime-gdscript',
-      Storage: 'storage-gdscript',
-      'Edge Runtime': 'functions-gdscript',
-    },
-  },
-]
-
-const selfHostedProjects = [
-  {
-    name: 'supabase-kubernetes',
-    description: 'Helm charts to deploy Supabase on Kubernetes.',
-    logo: {
-      alt: 'Kubernetes logo',
-      color: '#326CE5',
-      src: 'https://cdn.simpleicons.org/kubernetes/326CE5',
-    },
-  },
-  {
-    name: 'supabase-terraform',
-    description: 'Terraform resources for self-hosting Supabase.',
-    logo: {
-      alt: 'Terraform logo',
-      color: '#844FBA',
-      src: 'https://cdn.simpleicons.org/terraform/844FBA',
-    },
-  },
-  {
-    name: 'supabase-traefik',
-    description: 'Traefik configuration for self-hosted Supabase deployments.',
-    logo: {
-      alt: 'Traefik logo',
-      color: '#24A1C1',
-      src: 'https://cdn.simpleicons.org/traefikproxy/24A1C1',
-    },
-  },
-  {
-    name: 'supabase-on-aws',
-    description: 'CDK and CloudFormation templates for Supabase on AWS.',
-    logo: {
-      alt: 'AWS logo',
-      color: '#FF9900',
-      src: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg',
-    },
-  },
-]
-
-const utilityGroups: { heading: string; items: { name: string; description?: string }[] }[] = [
-  {
-    heading: 'General',
-    items: [
-      {
-        name: 'sql-examples',
-        description: 'Curated list of SQL to help you find useful script easily.',
-      },
-    ],
-  },
-  {
-    heading: 'Dart + Flutter',
-    items: [{ name: 'supabase-flutter-quickstart' }],
-  },
-  {
-    heading: 'React + Next',
-    items: [{ name: 'next-server-components' }],
-  },
-  {
-    heading: 'Svelte',
-    items: [
-      { name: 'svelte-supabase' },
-      { name: 'supabase-ui-svelte' },
-      { name: 'supabase-sveltekit-example' },
-      { name: 'svelte-kanban' },
-    ],
-  },
-  {
-    heading: 'Vue + Nuxt',
-    items: [{ name: 'nuxt-supabase' }, { name: 'vue-supabase' }],
-  },
-]
-
-const clientLibraryUrlByName: Record<string, string> = {
-  'supabase-js': 'https://github.com/supabase/supabase-js',
-  'postgrest-js': 'https://github.com/supabase/postgrest-js',
-  'auth-js': 'https://github.com/supabase/auth-js',
-  'realtime-js': 'https://github.com/supabase/realtime-js',
-  'storage-js': 'https://github.com/supabase/storage-js',
-  'functions-js': 'https://github.com/supabase/functions-js',
-  'supabase-flutter': 'https://github.com/supabase/supabase-flutter/tree/main/packages/supabase_flutter',
-  'postgrest-dart': 'https://github.com/supabase/supabase-flutter/tree/main/packages/postgrest',
-  'gotrue-dart': 'https://github.com/supabase/supabase-flutter/tree/main/packages/gotrue',
-  'realtime-dart':
-    'https://github.com/supabase/supabase-flutter/tree/main/packages/realtime_client',
-  'storage-dart': 'https://github.com/supabase/supabase-flutter/tree/main/packages/storage_client',
-  'functions-dart':
-    'https://github.com/supabase/supabase-flutter/tree/main/packages/functions_client',
-  'supabase-swift': 'https://github.com/supabase/supabase-swift',
-  'postgrest-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/PostgREST',
-  'auth-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/Auth',
-  'realtime-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/Realtime',
-  'storage-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/Storage',
-  'functions-swift': 'https://github.com/supabase/supabase-swift/tree/main/Sources/Functions',
-  'supabase-py': 'https://github.com/supabase/supabase-py',
-  'postgrest-py': 'https://github.com/supabase/postgrest-py',
-  'auth-py': 'https://github.com/supabase/auth-py',
-  'realtime-py': 'https://github.com/supabase/realtime-py',
-  'storage-py': 'https://github.com/supabase/storage-py',
-  'functions-py': 'https://github.com/supabase/functions-py',
-  'postgrest-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Postgrest',
-  'auth-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Auth',
-  'realtime-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Realtime',
-  'storage-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Storage',
-  'functions-kt': 'https://github.com/supabase-community/supabase-kt/tree/master/Functions',
-  'auth-rs': 'https://github.com/supabase-community/supabase-auth-rs',
-  'supabase-gdscript': 'https://github.com/supabase-community/godot-engine.supabase',
-}
-
 function getAreaId(label: string) {
   return label
     .toLowerCase()
@@ -378,14 +91,6 @@ function formatCount(value: number) {
   }
 
   return value.toString()
-}
-
-function getCommunityRepoUrl(name: string) {
-  return `https://github.com/supabase-community/${name}`
-}
-
-function getClientLibraryUrl(name: string) {
-  return clientLibraryUrlByName[name] ?? getCommunityRepoUrl(name)
 }
 
 const IconAreaDatabase = ({ className }: AreaIconProps) => (
@@ -624,24 +329,61 @@ const SectionHeader = ({
   </div>
 )
 
-const ClientLibraryLink = ({ name }: { name: string | null }) => {
+const ResourceLink = ({
+  children,
+  className,
+  name,
+  resourceSlugByName,
+}: {
+  children: ReactNode
+  className: string
+  name: string
+  resourceSlugByName: ResourceSlugByName
+}) => {
+  const slug = resourceSlugByName.get(name)
+
+  if (slug) {
+    return (
+      <Link className={className} href={`/${slug}`}>
+        {children}
+      </Link>
+    )
+  }
+
+  return (
+    <a className={className} href={getGitHubResourceUrl(name)} rel="noreferrer" target="_blank">
+      {children}
+    </a>
+  )
+}
+
+const ClientLibraryLink = ({
+  name,
+  resourceSlugByName,
+}: {
+  name: string | null
+  resourceSlugByName: ResourceSlugByName
+}) => {
   if (name === null) {
     return <span className="text-foreground-muted">Not listed</span>
   }
 
   return (
-    <a
+    <ResourceLink
       className="font-medium text-brand transition-colors hover:text-brand-600"
-      href={getClientLibraryUrl(name)}
-      rel="noreferrer"
-      target="_blank"
+      name={name}
+      resourceSlugByName={resourceSlugByName}
     >
       {name}
-    </a>
+    </ResourceLink>
   )
 }
 
-const ClientLibrariesSection = () => (
+const ClientLibrariesSection = ({
+  resourceSlugByName,
+}: {
+  resourceSlugByName: ResourceSlugByName
+}) => (
   <section id="client-libraries" className="scroll-mt-8 space-y-4 lg:scroll-mt-12">
     <SectionHeader
       title="Client Libraries"
@@ -690,7 +432,10 @@ const ClientLibrariesSection = () => (
                   {feature}
                 </p>
                 <p className="mt-1 text-sm">
-                  <ClientLibraryLink name={clientLibrary.libraries[feature]} />
+                  <ClientLibraryLink
+                    name={clientLibrary.libraries[feature]}
+                    resourceSlugByName={resourceSlugByName}
+                  />
                 </p>
               </div>
             ))}
@@ -701,7 +446,7 @@ const ClientLibrariesSection = () => (
   </section>
 )
 
-const SelfHostedSection = () => (
+const SelfHostedSection = ({ resourceSlugByName }: { resourceSlugByName: ResourceSlugByName }) => (
   <section id="self-hosted" className="scroll-mt-8 space-y-4 lg:scroll-mt-12">
     <SectionHeader
       title="Self-hosted"
@@ -710,19 +455,18 @@ const SelfHostedSection = () => (
 
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {selfHostedProjects.map((project) => (
-        <a
+        <ResourceLink
           key={project.name}
           className="block rounded-lg border bg-surface-100 p-4 transition-colors hover:border-overlay-hover"
-          href={getCommunityRepoUrl(project.name)}
-          rel="noreferrer"
-          target="_blank"
+          name={project.name}
+          resourceSlugByName={resourceSlugByName}
         >
           <h3 className="flex items-center gap-2 text-sm font-medium text-brand">
             <SelfHostedProjectLogo logo={project.logo} />
             <span>{project.name}</span>
           </h3>
           <p className="mt-1 line-clamp-3 text-sm text-foreground-lighter">{project.description}</p>
-        </a>
+        </ResourceLink>
       ))}
     </div>
   </section>
@@ -743,7 +487,7 @@ const SelfHostedProjectLogo = ({ logo }: { logo: (typeof selfHostedProjects)[num
   )
 }
 
-const UtilitiesSection = () => (
+const UtilitiesSection = ({ resourceSlugByName }: { resourceSlugByName: ResourceSlugByName }) => (
   <section id="utilities" className="scroll-mt-8 space-y-4 lg:scroll-mt-12">
     <SectionHeader
       title="Utilities"
@@ -760,18 +504,17 @@ const UtilitiesSection = () => (
                 <h3 className="text-sm font-medium text-foreground">{group.heading}</h3>
                 <div className="mt-3 grid gap-3">
                   {group.items.map((item) => (
-                    <a
+                    <ResourceLink
                       key={item.name}
                       className="block rounded-lg border bg-surface-100 p-4 transition-colors hover:border-overlay-hover"
-                      href={getCommunityRepoUrl(item.name)}
-                      rel="noreferrer"
-                      target="_blank"
+                      name={item.name}
+                      resourceSlugByName={resourceSlugByName}
                     >
                       <p className="text-sm font-medium text-brand">{item.name}</p>
                       {item.description && (
                         <p className="mt-1 text-sm text-foreground-lighter">{item.description}</p>
                       )}
-                    </a>
+                    </ResourceLink>
                   ))}
                 </div>
               </div>
@@ -784,6 +527,16 @@ const UtilitiesSection = () => (
 
 const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) => {
   const { query } = useCommunityDocsSearch()
+  const resourceSlugByName = useMemo(() => {
+    const entries = sections.flatMap((section) =>
+      section.pages.flatMap((page) => [
+        [page.frontmatter.repo, page.slug] as const,
+        [page.slug, page.slug] as const,
+      ])
+    )
+
+    return new Map(entries)
+  }, [sections])
 
   const filteredSections = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -866,9 +619,9 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
         </Card>
       ) : (
         <div className="space-y-12 pt-6 lg:pt-0">
-          <ClientLibrariesSection />
-          <SelfHostedSection />
-          <UtilitiesSection />
+          <ClientLibrariesSection resourceSlugByName={resourceSlugByName} />
+          <SelfHostedSection resourceSlugByName={resourceSlugByName} />
+          <UtilitiesSection resourceSlugByName={resourceSlugByName} />
 
           {filteredSections.map((section) => (
             <section

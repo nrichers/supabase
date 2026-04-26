@@ -4,9 +4,16 @@ import { dirname, extname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 
+import {
+  communityResourceNames,
+  getGitHubResourceSource,
+  getGitHubResourceUrl,
+  type GitHubResourceSource,
+} from '../lib/community-resources'
+
 const execFileAsync = promisify(execFile)
 
-const ORG = 'supabase-community'
+const COMMUNITY_ORG = 'supabase-community'
 const appDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const contentDirectory = join(appDirectory, 'content')
 const maxBuffer = 1024 * 1024 * 50
@@ -129,7 +136,7 @@ async function listRepos(): Promise<RepoListItem[]> {
   return gh<RepoListItem[]>([
     'repo',
     'list',
-    ORG,
+    COMMUNITY_ORG,
     '--visibility=public',
     '--limit=1000',
     '--json',
@@ -137,24 +144,61 @@ async function listRepos(): Promise<RepoListItem[]> {
   ])
 }
 
-async function getRepoDetails(repo: RepoListItem): Promise<RepoDetails | undefined> {
-  return maybeGh<RepoDetails>(['api', `repos/${ORG}/${repo.name}`])
+async function getRepoDetails(source: GitHubResourceSource): Promise<RepoDetails | undefined> {
+  return maybeGh<RepoDetails>(['api', `repos/${source.owner}/${source.repo}`])
 }
 
-async function getReadme(repo: string): Promise<string | undefined> {
-  const response = await maybeGh<ContentResponse>(['api', `repos/${ORG}/${repo}/readme`])
-
-  return decodeBase64Content(response)
+function encodeGitHubPath(path: string): string {
+  return path.split('/').map(encodeURIComponent).join('/')
 }
 
-async function getDocsFiles(repo: string, branch: string): Promise<SourceDocument[]> {
+function joinGitHubPath(...segments: Array<string | undefined>): string {
+  return segments
+    .filter((segment): segment is string => Boolean(segment))
+    .map((segment) => segment.replace(/^\/+|\/+$/g, ''))
+    .filter(Boolean)
+    .join('/')
+}
+
+async function getReadme(
+  source: GitHubResourceSource,
+  branch: string
+): Promise<string | undefined> {
+  if (!source.path) {
+    const response = await maybeGh<ContentResponse>([
+      'api',
+      `repos/${source.owner}/${source.repo}/readme?ref=${encodeURIComponent(branch)}`,
+    ])
+
+    return decodeBase64Content(response)
+  }
+
+  const candidates = ['README.md', 'README.mdx', 'readme.md', 'readme.mdx'].map((filename) =>
+    joinGitHubPath(source.path, filename)
+  )
+
+  for (const candidate of candidates) {
+    const response = await maybeGh<ContentResponse>([
+      'api',
+      `repos/${source.owner}/${source.repo}/contents/${encodeGitHubPath(candidate)}?ref=${encodeURIComponent(branch)}`,
+    ])
+    const content = decodeBase64Content(response)
+
+    if (content) return content
+  }
+
+  return undefined
+}
+
+async function getDocsFiles(source: GitHubResourceSource, branch: string): Promise<SourceDocument[]> {
   const tree = await maybeGh<TreeResponse>([
     'api',
-    `repos/${ORG}/${repo}/git/trees/${branch}?recursive=1`,
+    `repos/${source.owner}/${source.repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
   ])
+  const docsRoot = joinGitHubPath(source.path, 'docs')
   const paths =
     tree?.tree
-      ?.filter((item) => item.type === 'blob' && item.path?.startsWith('docs/'))
+      ?.filter((item) => item.type === 'blob' && item.path?.startsWith(`${docsRoot}/`))
       .map((item) => item.path)
       .filter((path): path is string => Boolean(path))
       .filter((path) => ['.md', '.mdx'].includes(extname(path)))
@@ -165,7 +209,7 @@ async function getDocsFiles(repo: string, branch: string): Promise<SourceDocumen
   for (const path of paths) {
     const response = await maybeGh<ContentResponse>([
       'api',
-      `repos/${ORG}/${repo}/contents/${encodeURI(path)}`,
+      `repos/${source.owner}/${source.repo}/contents/${encodeGitHubPath(path)}?ref=${encodeURIComponent(branch)}`,
     ])
     const content = decodeBase64Content(response)
 
@@ -223,9 +267,9 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-function inferCategory(repo: RepoDetails, content: string): string {
+function inferCategory(repo: RepoDetails, content: string, sourceName = repo.name): string {
   const haystack =
-    `${repo.name} ${repo.description ?? ''} ${repo.topics?.join(' ') ?? ''} ${content}`.toLowerCase()
+    `${sourceName} ${repo.name} ${repo.description ?? ''} ${repo.topics?.join(' ') ?? ''} ${content}`.toLowerCase()
   const match = categoryKeywords.find(({ keywords }) =>
     keywords.some((keyword) => haystack.includes(keyword))
   )
@@ -233,12 +277,12 @@ function inferCategory(repo: RepoDetails, content: string): string {
   return match?.category ?? 'Other'
 }
 
-function inferTags(repo: RepoDetails, content: string): string[] {
+function inferTags(repo: RepoDetails, content: string, sourceName = repo.name): string[] {
   const haystack =
-    `${repo.name} ${repo.description ?? ''} ${repo.topics?.join(' ') ?? ''} ${content}`.toLowerCase()
+    `${sourceName} ${repo.name} ${repo.description ?? ''} ${repo.topics?.join(' ') ?? ''} ${content}`.toLowerCase()
   const topicTags = repo.topics ?? []
   const keywordTags = tagKeywords.filter((keyword) => haystack.includes(keyword))
-  const repoNameTags = repo.name
+  const repoNameTags = sourceName
     .split(/[-_]/)
     .map(slugify)
     .filter((tag) => tag && tag !== 'supabase' && tag.length > 2)
@@ -290,7 +334,11 @@ function toFrontmatter(doc: GeneratedDoc): string {
   ].join('\n')
 }
 
-function buildGeneratedDoc(repo: RepoDetails, documents: SourceDocument[]): GeneratedDoc {
+function buildGeneratedDoc(
+  repo: RepoDetails,
+  documents: SourceDocument[],
+  source: GitHubResourceSource
+): GeneratedDoc {
   const combinedContent = documents.map((document) => document.content).join('\n\n')
   const sections = documents.flatMap((document) =>
     extractGettingStartedSections(document.content).map((section) => ({
@@ -313,18 +361,18 @@ function buildGeneratedDoc(repo: RepoDetails, documents: SourceDocument[]): Gene
       : 'No getting-started sections were found in the README or docs directory for this repository.'
 
   return {
-    title: humanizeRepoName(repo.name),
+    title: humanizeRepoName(source.name),
     description,
-    repo: repo.name,
-    repoUrl: repo.html_url,
+    repo: source.name,
+    repoUrl: getGitHubResourceUrl(source.name),
     stars: repo.stargazers_count ?? 0,
     forks: repo.forks_count ?? 0,
     language: repo.language ?? undefined,
     isTemplate: repo.is_template ?? false,
-    tags: inferTags(repo, combinedContent),
-    category: inferCategory(repo, combinedContent),
+    tags: inferTags(repo, combinedContent, source.name),
+    category: inferCategory(repo, combinedContent, source.name),
     content: [
-      `> This page is generated from [${repo.name}](${repo.html_url}).`,
+      `> This page is generated from [${source.name}](${getGitHubResourceUrl(source.name)}).`,
       '',
       '## Getting started',
       '',
@@ -349,18 +397,32 @@ async function main() {
   await removeGeneratedContent()
 
   const repos = await listRepos()
+  const sourcesBySlug = new Map<string, GitHubResourceSource>()
 
   for (const repo of repos) {
-    const details = await getRepoDetails(repo)
+    sourcesBySlug.set(slugify(repo.name), {
+      name: repo.name,
+      owner: COMMUNITY_ORG,
+      repo: repo.name,
+    })
+  }
+
+  for (const name of communityResourceNames) {
+    sourcesBySlug.set(slugify(name), getGitHubResourceSource(name))
+  }
+
+  for (const source of sourcesBySlug.values()) {
+    const details = await getRepoDetails(source)
 
     if (!details) continue
 
-    const readme = await getReadme(repo.name)
-    const docsFiles = await getDocsFiles(repo.name, details.default_branch)
+    const branch = source.branch ?? details.default_branch
+    const readme = await getReadme(source, branch)
+    const docsFiles = await getDocsFiles(source, branch)
     const documents = [...(readme ? [{ label: 'README.md', content: readme }] : []), ...docsFiles]
 
-    const generated = buildGeneratedDoc(details, documents)
-    const filename = `${slugify(repo.name)}.mdx`
+    const generated = buildGeneratedDoc(details, documents, source)
+    const filename = `${slugify(source.name)}.mdx`
     const output = `${toFrontmatter(generated)}\n\n${generated.content}\n`
 
     await writeFile(join(contentDirectory, filename), output)

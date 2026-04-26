@@ -1,42 +1,25 @@
 ---
 title: "Functions Swift"
-description: "Swift Client library to interact with Supabase Functions."
+description: "A Swift SDK for Supabase. Query your Supabase database, subscribe to realtime events, upload and download files, browse Swift examples, invoke postgres functions via rpc, invoke supabase edge functions, query pgvector."
 repo: "functions-swift"
-repoUrl: "https://github.com/supabase-community/functions-swift"
-stars: 10
-forks: 1
+repoUrl: "https://github.com/supabase/supabase-swift/tree/main/Sources/Functions"
+stars: 1219
+forks: 242
 language: "Swift"
 isTemplate: false
 tags:
-  - "functions"
+  - "database"
+  - "ios"
+  - "supabase"
   - "swift"
-category: "Edge Functions"
+  - "realtime"
+  - "postgres"
+  - "functions"
+category: "Storage"
 ---
 
-> This page is generated from [functions-swift](https://github.com/supabase-community/functions-swift).
+> This page is generated from [functions-swift](https://github.com/supabase/supabase-swift/tree/main/Sources/Functions).
 
 ## Getting started
 
-{/* Source: README.md */}
-
-## Usage
-
-```swift
-let client = FunctionsClient(
-  url: URL(string: "https://project-id.supabase.com/functions/v1")!,
-  headers: [
-    "apikey": "project-api-key"
-  ]
-)
-
-struct Response: Decodable {
-  let message: String
-}
-
-let response: Response = try await client.invoke(
-  functionName: "hello-world",
-  invokeOptions: FunctionInvokeOptions(body: ["name": "Functions"])
-)
-
-assert(response.message = "Hello Functions")
-```
+No getting-started sections were found in the README or docs directory for this repository.

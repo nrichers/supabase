@@ -1,8 +1,8 @@
 ---
-title: "Postgrest Kt"
+title: "Functions Kt"
 description: "A Kotlin Multiplatform Client for Supabase."
-repo: "postgrest-kt"
-repoUrl: "https://github.com/supabase-community/supabase-kt/tree/master/Postgrest"
+repo: "functions-kt"
+repoUrl: "https://github.com/supabase-community/supabase-kt/tree/master/Functions"
 stars: 797
 forks: 88
 language: "Kotlin"
@@ -19,7 +19,7 @@ tags:
 category: "Auth"
 ---
 
-> This page is generated from [postgrest-kt](https://github.com/supabase-community/supabase-kt/tree/master/Postgrest).
+> This page is generated from [functions-kt](https://github.com/supabase-community/supabase-kt/tree/master/Functions).
 
 ## Getting started
 
@@ -31,24 +31,23 @@ Newest version: [![](https://img.shields.io/github/release/supabase-community/su
 
 ```kotlin
 dependencies {
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:VERSION")
+    implementation("io.github.jan-tennert.supabase:functions-kt:VERSION")
 }
 ```
 
 Install the plugin in your SupabaseClient. See the [documentation](https://supabase.com/docs/reference/kotlin/initializing) for more information
-
 ```kotlin
-val supabase = createSupabaseClient(
+val client = createSupabaseClient(
     supabaseUrl = "https://id.supabase.co",
     supabaseKey = "apikey"
 ) {
-
+    
     //...
-
-    install(Postgrest) {
+    
+    install(Functions) {
         // settings
     }
-
+    
 }
 ```
 
@@ -56,4 +55,4 @@ val supabase = createSupabaseClient(
 
 # Usage
 
-See [Postgrest documentation](https://supabase.com/docs/reference/kotlin/select) for usage
+See [Functions documentation](https://supabase.com/docs/reference/kotlin/functions-invoke) for usage
