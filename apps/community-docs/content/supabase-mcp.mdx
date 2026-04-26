@@ -1,18 +1,22 @@
 ---
-title: 'Mcp'
-description: 'Connect Supabase to your AI assistants'
-repo: 'supabase-mcp'
-repoUrl: 'https://github.com/supabase-community/supabase-mcp'
+title: "Mcp"
+description: "Connect Supabase to your AI assistants"
+repo: "supabase-mcp"
+repoUrl: "https://github.com/supabase-community/supabase-mcp"
+stars: 2640
+forks: 342
+language: "TypeScript"
+isTemplate: false
 tags:
-  - 'auth'
-  - 'storage'
-  - 'realtime'
-  - 'database'
-  - 'postgres'
-  - 'functions'
-  - 'edge-functions'
-  - 'expo'
-category: 'Auth'
+  - "auth"
+  - "storage"
+  - "realtime"
+  - "database"
+  - "postgres"
+  - "functions"
+  - "edge-functions"
+  - "expo"
+category: "Auth"
 ---
 
 > This page is generated from [supabase-mcp](https://github.com/supabase-community/supabase-mcp).
@@ -26,28 +30,28 @@ category: 'Auth'
 The `@supabase/mcp-server-supabase` package exports `createToolSchemas()` to populate input and output schemas for Vercel AI SDK's [MCP client](https://ai-sdk.dev/docs/ai-sdk-core/mcp-tools). This allows Supabase MCP tools to be treated as static tools with client-side validation and inferred TypeScript types for their inputs and outputs.
 
 ```ts
-import { createMCPClient } from '@ai-sdk/mcp'
-import { createToolSchemas } from '@supabase/mcp-server-supabase'
-import { streamText } from 'ai'
+import { createToolSchemas } from '@supabase/mcp-server-supabase';
+import { createMCPClient } from '@ai-sdk/mcp';
+import { streamText } from 'ai';
 
 const mcpClient = await createMCPClient({
   transport: {
     type: 'http',
     url: 'https://mcp.supabase.com/mcp',
   },
-})
+});
 
 const tools = await mcpClient.tools({
   schemas: createToolSchemas(),
-})
+});
 
-const result = streamText({ model, tools, prompt: '...' })
+const result = streamText({ model, tools, prompt: '...' });
 
 for (const step of await result.steps) {
   for (const toolResult of step.staticToolResults) {
     if (toolResult.toolName === 'get_project_url') {
-      toolResult.input // { project_id: string }
-      toolResult.output // { url: string }
+      toolResult.input;  // { project_id: string }
+      toolResult.output; // { url: string }
     }
   }
 }
@@ -65,7 +69,7 @@ const mcpClient = await createMCPClient({
     type: 'http',
     url: 'https://mcp.supabase.com/mcp?project_ref=<project-ref>&read_only=true&features=database,docs',
   },
-})
+});
 
 const tools = await mcpClient.tools({
   schemas: createToolSchemas({
@@ -73,7 +77,7 @@ const tools = await mcpClient.tools({
     projectScoped: true,
     readOnly: true,
   }),
-})
+});
 ```
 
 > [!NOTE]

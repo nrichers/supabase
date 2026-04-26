@@ -1,14 +1,18 @@
 ---
-title: 'Vue Supabase'
-description: 'A supa simple wrapper around Supabase.js to enable usage within Vue.'
-repo: 'vue-supabase'
-repoUrl: 'https://github.com/supabase-community/vue-supabase'
+title: "Vue Supabase"
+description: "A supa simple wrapper around Supabase.js to enable usage within Vue."
+repo: "vue-supabase"
+repoUrl: "https://github.com/supabase-community/vue-supabase"
+stars: 88
+forks: 7
+language: "TypeScript"
+isTemplate: false
 tags:
-  - 'supabase'
-  - 'vue'
-  - 'auth'
-  - 'storage'
-category: 'Auth'
+  - "supabase"
+  - "vue"
+  - "auth"
+  - "storage"
+category: "Auth"
 ---
 
 > This page is generated from [vue-supabase](https://github.com/supabase-community/vue-supabase).
@@ -19,7 +23,7 @@ category: 'Auth'
 
 ## Installation
 
-````bash
+```bash
 
 {/* Source: README.md */}
 
@@ -35,10 +39,10 @@ Vue.use(VueSupabase, {
   supabaseKey: "",
   supabaseOptions: {},
 });
-````
+```
 
 ```js
-const { data, error } = await this.$supabase.from('events').select('*')
+const { data, error } = await this.$supabase.from("events").select("*");
 ```
 
 ### Vue 3.x
@@ -60,26 +64,26 @@ app.mount(...)
 #### Options API
 
 ```js
-const { data, error } = await this.$supabase.from('events').select('*')
+const { data, error } = await this.$supabase.from("events").select("*");
 ```
 
 #### Composition API
 
 ```js
-import { useSupabase } from 'vue-supabase'
+import { useSupabase } from "vue-supabase";
 
-const supabase = useSupabase()
+const supabase = useSupabase();
 
-const { data, error } = await supabase.from('events').select('*')
+const { data, error } = await supabase.from("events").select("*");
 ```
 
 Here are a couple of composables available with Vue 3.x or Vue 2.x + Composition API
 
 ```js
-import { useSupabaseAuth, useSupabaseStorage } from 'vue-supabase'
+import { useSupabaseAuth, useSupabaseStorage } from "vue-supabase";
 
-const auth = useSupabaseAuth()
-const storage = useSupabaseStorage()
-const { data } = await storage.listBuckets()
-await auth.signOut()
+const auth = useSupabaseAuth();
+const storage = useSupabaseStorage();
+const { data } = await storage.listBuckets();
+await auth.signOut();
 ```

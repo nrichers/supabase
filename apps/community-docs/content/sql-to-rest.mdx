@@ -1,18 +1,22 @@
 ---
-title: 'Sql To Rest'
-description: 'SQL to PostgREST translator'
-repo: 'sql-to-rest'
-repoUrl: 'https://github.com/supabase-community/sql-to-rest'
+title: "Sql To Rest"
+description: "SQL to PostgREST translator"
+repo: "sql-to-rest"
+repoUrl: "https://github.com/supabase-community/sql-to-rest"
+stars: 47
+forks: 3
+language: "TypeScript"
+isTemplate: false
 tags:
-  - 'auth'
-  - 'database'
-  - 'postgres'
-  - 'functions'
-  - 'flutter'
-  - 'swift'
-  - 'sql'
-  - 'rest'
-category: 'Auth'
+  - "auth"
+  - "database"
+  - "postgres"
+  - "functions"
+  - "flutter"
+  - "swift"
+  - "sql"
+  - "rest"
+category: "Auth"
 ---
 
 > This page is generated from [sql-to-rest](https://github.com/supabase-community/sql-to-rest).
@@ -26,7 +30,7 @@ category: 'Auth'
 _Note: This library is pre-1.0, so expect slight API changes over time._
 
 ```js
-import { formatCurl, processSql, renderHttp } from '@supabase/sql-to-rest'
+import { processSql, renderHttp, formatCurl } from '@supabase/sql-to-rest'
 
 // Process SQL into intermediate PostgREST AST
 const statement = await processSql(`

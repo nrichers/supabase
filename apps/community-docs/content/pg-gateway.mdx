@@ -1,15 +1,19 @@
 ---
-title: 'Pg Gateway'
-description: 'Postgres wire protocol for the server-side'
-repo: 'pg-gateway'
-repoUrl: 'https://github.com/supabase-community/pg-gateway'
+title: "Pg Gateway"
+description: "Postgres wire protocol for the server-side"
+repo: "pg-gateway"
+repoUrl: "https://github.com/supabase-community/pg-gateway"
+stars: 255
+forks: 15
+language: "TypeScript"
+isTemplate: false
 tags:
-  - 'auth'
-  - 'database'
-  - 'postgres'
-  - 'expo'
-  - 'gateway'
-category: 'Auth'
+  - "auth"
+  - "database"
+  - "postgres"
+  - "expo"
+  - "gateway"
+category: "Auth"
 ---
 
 > This page is generated from [pg-gateway](https://github.com/supabase-community/pg-gateway).
@@ -27,19 +31,19 @@ This library is designed to give you as much control as possible while still man
 Start by creating your own TCP server (ie. via `node:net`), then pass the socket into a `PostgresConnection`:
 
 ```typescript
-import { createServer } from 'node:net'
-import { PostgresConnection } from 'pg-gateway'
+import { createServer } from 'node:net';
+import { PostgresConnection } from 'pg-gateway';
 
 // Create a TCP server
 const server = createServer((socket) => {
   // `PostgresConnection` will manage the protocol lifecycle
-  const connection = new PostgresConnection(socket)
-})
+  const connection = new PostgresConnection(socket);
+});
 
 // Listen on the desired port
 server.listen(5432, () => {
-  console.log('Server listening on port 5432')
-})
+  console.log('Server listening on port 5432');
+});
 ```
 
 `PostgresConnection` exposes a number of options and hooks as its second argument:
@@ -51,7 +55,7 @@ Specifies the version of the server to return back to the client. Can include an
 ```typescript
 const connection = new PostgresConnection(socket, {
   serverVersion: '16.3 (MyCustomPG)',
-})
+});
 ```
 
 ### `authMode`
@@ -66,7 +70,7 @@ Specifies which auth mode you want to use with clients. Current modes supported 
 ```typescript
 const connection = new PostgresConnection(socket, {
   authMode: `md5Password`,
-})
+});
 ```
 
 ### `tls`
@@ -89,11 +93,11 @@ const tls: TlsOptions = {
   key: readFileSync('server-key.pem'),
   cert: readFileSync('server-cert.pem'),
   ca: readFileSync('ca-cert.pem'),
-}
+};
 
 const connection = new PostgresConnection(socket, {
   tls,
-})
+});
 ```
 
 ### `onTlsUpgrade()`
@@ -107,14 +111,14 @@ const tls: TlsOptions = {
   key: readFileSync('server-key.pem'),
   cert: readFileSync('server-cert.pem'),
   ca: readFileSync('ca-cert.pem'),
-}
+};
 
 const connection = new PostgresConnection(socket, {
   tls,
   async onTlsUpgrade({ tlsInfo }) {
-    console.log({ tlsInfo })
+    console.log({ tlsInfo });
   },
-})
+});
 ```
 
 ### `onStartup()`
@@ -130,9 +134,9 @@ The callback should return `true` to indicate that it has responded to the start
 ```typescript
 const connection = new PostgresConnection(socket, {
   async onStartup({ clientInfo }) {
-    console.log({ clientInfo })
+    console.log({ clientInfo });
   },
-})
+});
 ```
 
 ### `onAuthenticated()`
@@ -142,9 +146,9 @@ This hook is called after a successful authentication has completed. It passes a
 ```typescript
 const connection = new PostgresConnection(socket, {
   async onAuthenticated(state) {
-    console.log(state)
+    console.log(state);
   },
-})
+});
 ```
 
 ### `validateCredentials()`
@@ -152,7 +156,9 @@ const connection = new PostgresConnection(socket, {
 This hook allows you to authenticate credentials based on the [auth mode](#authmode). Returning `true` indicates that the credentials are valid and `false` indicates that they are invalid. If the credentials are marked invalid, the server will close the connection with an error. The callback can be either synchronous or asynchronous.
 
 1. The first argument contains a `credentials` object passed to the function will contain different properties based on the auth mode:
+
    - `cleartextPassword`:
+
      - `authMode`: `'cleartextPassword'`;
      - `user`: `string`;
      - `password`: `string`;
@@ -168,20 +174,20 @@ This hook allows you to authenticate credentials based on the [auth mode](#authm
 You can use TypeScript's [discriminated unions](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions) to narrow the type of `credentials` before accessing its properties:
 
 ```typescript
-import { hashMd5Password, PostgresConnection } from 'pg-gateway'
+import { PostgresConnection, hashMd5Password } from 'pg-gateway';
 
 // ...
 
 const connection = new PostgresConnection(socket, {
   async validateCredentials(credentials) {
     if (credentials.authMode === 'md5Password') {
-      const { hash, salt } = credentials
-      const expectedHash = await hashMd5Password('postgres', 'postgres', salt)
-      return hash === expectedHash
+      const { hash, salt } = credentials;
+      const expectedHash = await hashMd5Password('postgres', 'postgres', salt);
+      return hash === expectedHash;
     }
-    return false
+    return false;
   },
-})
+});
 ```
 
 ### `onMessage()`
@@ -200,9 +206,9 @@ const connection = new PostgresConnection(socket, {
   async onMessage(data, { hasStarted, isAuthenticated }) {
     // Handle raw messages yourself
 
-    return false
+    return false;
   },
-})
+});
 ```
 
 See [PGlite](#pglite) for an example on how you might use this.
@@ -214,6 +220,7 @@ Over the course of the protocol lifecycle, `pg-gateway` will hold a `state` obje
 - `hasStarted`: boolean indicating whether or not a startup message has been received by the client
 - `isAuthenticated`: boolean indicating whether or not a successful authentication handshake has completed with the client
 - `clientInfo`: object containing client information sent during startup.
+
   - `majorVersion`: `number`;
   - `minorVersion`: `number`;
   - `parameters`:
@@ -223,6 +230,7 @@ Over the course of the protocol lifecycle, `pg-gateway` will hold a `state` obje
   Note that `clientInfo` will be `undefined` until a startup message is received.
 
 - `tlsInfo`: object containing TLS connection information (if TLS is being used).
+
   - `sniServerName`: string containing the [SNI](#reverse-proxy-using-sni) server name sent by the client. This can be `undefined` if the SNI extension was not used by the client.
 
   Note that `tlsInfo` will be `undefined` until a TLS upgrade has completed.
@@ -230,8 +238,8 @@ Over the course of the protocol lifecycle, `pg-gateway` will hold a `state` obje
 State is available directly on the `PostgresConnection` instance:
 
 ```typescript
-const connection = new PostgresConnection(socket)
-console.log(connection.state)
+const connection = new PostgresConnection(socket);
+console.log(connection.state);
 ```
 
 It is also passed as an argument to most hooks for convenience.

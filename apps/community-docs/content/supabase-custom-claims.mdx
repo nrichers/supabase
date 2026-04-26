@@ -1,17 +1,21 @@
 ---
-title: 'Custom Claims'
-description: 'How to implement custom claims with Supabase'
-repo: 'supabase-custom-claims'
-repoUrl: 'https://github.com/supabase-community/supabase-custom-claims'
+title: "Custom Claims"
+description: "How to implement custom claims with Supabase"
+repo: "supabase-custom-claims"
+repoUrl: "https://github.com/supabase-community/supabase-custom-claims"
+stars: 678
+forks: 50
+language: "JavaScript"
+isTemplate: false
 tags:
-  - 'auth'
-  - 'realtime'
-  - 'database'
-  - 'postgres'
-  - 'functions'
-  - 'custom'
-  - 'claims'
-category: 'Auth'
+  - "auth"
+  - "realtime"
+  - "database"
+  - "postgres"
+  - "functions"
+  - "custom"
+  - "claims"
+category: "Auth"
 ---
 
 > This page is generated from [supabase-custom-claims](https://github.com/supabase-community/supabase-custom-claims).
@@ -21,19 +25,13 @@ category: 'Auth'
 {/* Source: README.md */}
 
 ## Usage
-
 ### Inside the Query Editor
-
 You can get, set, and delete claims for any user based on the user's `id` (uuid) with the following functions:
 
 #### `get_claims(uid uuid)` returns jsonb
-
 ##### example
-
 `select get_claims('03acaa13-7989-45c1-8dfb-6eeb7cf0b92e');`
-
 ##### result
-
 ```
 | get_claims                                                                                                                                                                 |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -41,13 +39,9 @@ You can get, set, and delete claims for any user based on the user's `id` (uuid)
 ```
 
 #### `get_claim(uid uuid, claim text)` returns jsonb
-
 ##### example
-
 `select get_claim('03acaa13-7989-45c1-8dfb-6eeb7cf0b92e', 'userlevel');`
-
 ##### result
-
 ```
 | get_claim |
 | --------- |
@@ -55,13 +49,11 @@ You can get, set, and delete claims for any user based on the user's `id` (uuid)
 ```
 
 #### `set_claim(uid uuid, claim text, value jsonb) `returns text
-
 ##### example
-
-Set a **number** value. (Note `value` is passed as a `jsonb` value, so to set a number we need to pass it as a simple string.)
+Set a **number** value.  (Note `value` is passed as a `jsonb` value, so to set a number we need to pass it as a simple string.)
 `select set_claim('03acaa13-7989-45c1-8dfb-6eeb7cf0b92e', 'userlevel', '200');`
 
-Set a **text** value. (Note `value` is passed as a `jsonb` value, so to set a number we need to pass it with double-quotes.)
+Set a **text** value.  (Note `value` is passed as a `jsonb` value, so to set a number we need to pass it with double-quotes.)
 `select set_claim('03acaa13-7989-45c1-8dfb-6eeb7cf0b92e', 'userrole', '"MANAGER"');`
 
 **Common Mistake**: If you forget the double-quotes for a string, and try to do this: `select set_claim('03acaa13-7989-45c1-8dfb-6eeb7cf0b92e', 'userrole', 'MANAGER');`, the result will be an error: `invalid input syntax for type json`
@@ -76,7 +68,6 @@ Set a complex, nested **json** / **object** value.
 `select set_claim('03acaa13-7989-45c1-8dfb-6eeb7cf0b92e', 'gamestate', '{"level": 5, "items": ["knife", "gun"], "position":{"x": 15, "y": 22}}');`
 
 ##### result (for any of the above)
-
 ```
 | set_claim |
 | --------- |
@@ -84,13 +75,9 @@ Set a complex, nested **json** / **object** value.
 ```
 
 #### `delete_claim(uid uuid, claim text)` returns text
-
 ##### example
-
 `select delete_claim('03acaa13-7989-45c1-8dfb-6eeb7cf0b92e', 'gamestate');`
-
 ##### result
-
 ```
 | delete_claim |
 | ------------ |
@@ -98,19 +85,14 @@ Set a complex, nested **json** / **object** value.
 ```
 
 ### Inside PostgreSQL Functions and Triggers
-
 When using custom claims from inside a PostgreSQL function or trigger, you can use any of the functions shown in the section above: `Inside the Query Editor`.
 
 In addition, you can use the following functions that are specific to the currently logged-in user:
 
 #### `is_claims_admin()` returns bool
-
 ##### example
-
 `select is_claims_admin();`
-
 ##### result
-
 ```
 | is_claims_admin |
 | --------------- |
@@ -118,13 +100,9 @@ In addition, you can use the following functions that are specific to the curren
 ```
 
 #### `get_my_claims()` returns jsonb
-
 ##### example
-
 `select get_my_claims();`
-
 ##### result
-
 ```
 | get_my_claims                                                                                                                                                              |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -132,13 +110,9 @@ In addition, you can use the following functions that are specific to the curren
 ```
 
 #### `get_my_claim(claim TEXT)` returns jsonb
-
 ##### example
-
 `select get_my_claim('userlevel');`
-
 ##### result
-
 ```
 | get_my_claim |
 | ------------ |
@@ -146,43 +120,35 @@ In addition, you can use the following functions that are specific to the curren
 ```
 
 ### Inside an RLS (Row Level Security) Policy
-
 To use custom claims in an RLS Policy, you'll normally use the `get_my_claim` to check a specific claim for the currently logged in user.
-
 #### examples
-
 ##### only allow users with userrole "MANAGER"
-
 `get_my_claim('userrole') = '"MANAGER"'`
 (which the UI will change into the more formal):
 `((get_my_claim('userrole'::text)) = '"MANAGER"'::jsonb)`
 
 ##### only allow users with userlevel over 100
-
 `coalesce(get_my_claim('userlevel')::numeric,0) > 100`
 
 ##### only allow users with claim_admin = true
-
 `coalesce(get_my_claim('claims_admin')::bool,false)`
 
 ### Inside your app (using `.rpc()`)
 
 #### Getting Claims Data from Local Session Data
-
-You can extract claims information from the `session` object you get when the user is logged in. For example:
+You can extract claims information from the `session` object you get when the user is logged in.  For example:
 
 ```js
-supabase.auth.onAuthStateChange((_event, session) => {
-  if (session?.user) {
-    console.log(session?.user?.app_metadata) // show custom claims
-  }
-})
+		supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) {
+    			console.log(session?.user?.app_metadata) // show custom claims
+            }
+		})
 ```
 
 If any claims have changed since your last log in, you may need to log out and back in to see these changes.
 
 #### Getting Claims Data from the Server
-
 You can also query the server to see what claims are set for the current user.
 
 Here are some sample functions that can be used by any authenticated (logged-in) user of your application:

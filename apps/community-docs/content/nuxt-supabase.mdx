@@ -1,14 +1,18 @@
 ---
-title: 'Nuxt Supabase'
-description: 'A supa simple wrapper around Supabase.js to enable usage within Nuxt.'
-repo: 'nuxt-supabase'
-repoUrl: 'https://github.com/supabase-community/nuxt-supabase'
+title: "Nuxt Supabase"
+description: "A supa simple wrapper around Supabase.js to enable usage within Nuxt."
+repo: "nuxt-supabase"
+repoUrl: "https://github.com/supabase-community/nuxt-supabase"
+stars: 174
+forks: 16
+language: "TypeScript"
+isTemplate: false
 tags:
-  - 'nuxt'
-  - 'supabase'
-  - 'vue'
-  - 'expo'
-category: 'Storage'
+  - "nuxt"
+  - "supabase"
+  - "vue"
+  - "expo"
+category: "Storage"
 ---
 
 > This page is generated from [nuxt-supabase](https://github.com/supabase-community/nuxt-supabase).
@@ -23,7 +27,6 @@ You can then use supabase within your Nuxt context, or Vue components.
 
 ```vue
 <script>
-
 export default {
   async asyncData({ $supabase }) {
     return {
@@ -33,20 +36,19 @@ export default {
 }
 </script>
 ```
-
 ```vue
 <script>
 export default {
   data() {
     return {
       events: null,
-    }
+    };
   },
   methods: {
     async getEvents() {
-      this.events = await this.$supabase.from('events').select('*')
+      this.events = await this.$supabase.from("events").select("*");
     },
   },
-}
+};
 </script>
 ```

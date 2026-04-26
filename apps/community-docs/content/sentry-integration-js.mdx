@@ -1,16 +1,20 @@
 ---
-title: 'Sentry Integration Js'
-description: '<br/>'
-repo: 'sentry-integration-js'
-repoUrl: 'https://github.com/supabase-community/sentry-integration-js'
+title: "Sentry Integration Js"
+description: "<br/>"
+repo: "sentry-integration-js"
+repoUrl: "https://github.com/supabase-community/sentry-integration-js"
+stars: 17
+forks: 5
+language: "JavaScript"
+isTemplate: false
 tags:
-  - 'database'
-  - 'functions'
-  - 'nextjs'
-  - 'expo'
-  - 'sentry'
-  - 'integration'
-category: 'Auth'
+  - "database"
+  - "functions"
+  - "nextjs"
+  - "expo"
+  - "sentry"
+  - "integration"
+category: "Auth"
 ---
 
 > This page is generated from [sentry-integration-js](https://github.com/supabase-community/sentry-integration-js).
@@ -22,9 +26,9 @@ category: 'Auth'
 ## Usage
 
 ```js
-import * as Sentry from '@sentry/browser'
-import { supabaseIntegration } from '@supabase/sentry-js-integration'
-import { SupabaseClient } from '@supabase/supabase-js'
+import * as Sentry from "@sentry/browser";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { supabaseIntegration } from "@supabase/sentry-js-integration";
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -35,17 +39,17 @@ Sentry.init({
       errors: true,
     }),
   ],
-})
+});
 ```
 
 or
 
 ```js
-import * as Sentry from '@sentry/browser'
-import { supabaseIntegration } from '@supabase/sentry-js-integration'
-import { createClient } from '@supabase/supabase-js'
+import * as Sentry from "@sentry/browser";
+import { createClient } from "@supabase/supabase-js";
+import { supabaseIntegration } from "@supabase/sentry-js-integration";
 
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY)
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -56,5 +60,5 @@ Sentry.init({
       errors: true,
     }),
   ],
-})
+});
 ```

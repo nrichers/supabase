@@ -1,18 +1,22 @@
 ---
-title: 'Snapshot'
-description: 'Capture a snapshot (or subset) of your Postgres database whilst transforming the data.'
-repo: 'snapshot'
-repoUrl: 'https://github.com/supabase-community/snapshot'
+title: "Snapshot"
+description: "Capture a snapshot (or subset) of your Postgres database whilst transforming the data."
+repo: "snapshot"
+repoUrl: "https://github.com/supabase-community/snapshot"
+stars: 326
+forks: 29
+language: "TypeScript"
+isTemplate: false
 tags:
-  - 'postgres'
-  - 'snapshot'
-  - 'subset'
-  - 'auth'
-  - 'storage'
-  - 'database'
-  - 'functions'
-  - 'expo'
-category: 'Auth'
+  - "postgres"
+  - "snapshot"
+  - "subset"
+  - "auth"
+  - "storage"
+  - "database"
+  - "functions"
+  - "expo"
+category: "Auth"
 ---
 
 > This page is generated from [snapshot](https://github.com/supabase-community/snapshot).
@@ -27,29 +31,29 @@ To get started with Snaplet snapshots, follow these steps:
 
 1. Configure your Snaplet CLI by running the following command:
 
-```terminal
-npx @snaplet/snapshot setup
-```
+  ```terminal
+  npx @snaplet/snapshot setup
+  ```
 
 2. To capture a new snapshot, you will have to define your source database with the `SNAPLET_SOURCE_DATABASE_URL` environment variable. Capture a new snapshot by running the following command:
 
-```terminal
-SNAPLET_SOURCE_DATABASE_URL='' npx @snaplet/snapshot snapshot capture
-```
+  ```terminal
+ SNAPLET_SOURCE_DATABASE_URL='' npx @snaplet/snapshot snapshot capture
+  ```
 
 > Note: Replace `SNAPLET_SOURCE_DATABASE_URL` with your source database URL. Example: `postgresql://USER:PASSWORD@REMOTE_DB_HOST:PORT/DB_NAME`
 
 3. List all available snapshots by running the following command:
 
-```terminal
-npx @snaplet/snapshot snapshot ls
-```
+  ```terminal
+  npx @snaplet/snapshot snapshot ls
+  ```
 
 4. Restore a snapshot to your source database by running the following command:
 
-```terminal
-npx @snaplet/snapshot snapshot restore
-```
+  ```terminal
+  npx @snaplet/snapshot snapshot restore
+  ```
 
 That's it! You're now ready to use Snaplet snapshots in your workflow.
 
@@ -82,7 +86,7 @@ To transform the data in your database Snaplet needs two things:
 
 Run `snaplet setup` at the root of your codebase (in your git repo), so that the configuration file is shared with the rest of your team.
 
-````bash >_ terminal
+```bash >_&nbsp;terminal
 
 {/* Source: docs/pages/snapshot/core-concepts/capture.mdx */}
 
@@ -107,13 +111,12 @@ export default defineConfig({
     keepDisconnectedTables: true,
   },
 });
-````
+```
 
 When `snaplet snapshot capture` is run against the above example config the following will happen:
-
-- The `User` table is subsetted to roughly 5% of its original size.
-- Related rows in related tables connected to the `User` table via foreign key relationships are included in the new snapshot.
-- As `keepDisconnectedTables` is set to `true`, any tables not connected to the `User` table via foreign key relationships will be included in the new snapshot, and **won't** be subsetted.
+* The `User` table is subsetted to roughly 5% of its original size.
+* Related rows in related tables connected to the `User` table via foreign key relationships are included in the new snapshot.
+* As `keepDisconnectedTables` is set to `true`, any tables not connected to the `User` table via foreign key relationships will be included in the new snapshot, and **won't** be subsetted.
 
 {/* Source: docs/pages/snapshot/getting-started/installation.mdx */}
 
@@ -146,12 +149,10 @@ For those looking to delve deeper or self-host Snaplet, check out our [self-host
 {/* Source: docs/pages/snapshot/getting-started/quick-start.mdx */}
 
 ## Getting Started
-
 **In this tutorial, we'll guide you through the process of:**
-
-- Capturing your first snapshot with Snaplet.
-- Installing the Snaplet CLI.
-- Restoring that snapshot to your development environment.
+* Capturing your first snapshot with Snaplet.
+* Installing the Snaplet CLI.
+* Restoring that snapshot to your development environment.
 
 Let's get started.
 
@@ -190,7 +191,7 @@ You're done with this step when you can see a successfully created snapshot in y
 
 ![Snaplet review and save](/recipes/netlify/netlify-snaplet-snapshot-success.png)
 
-<br />
+<br/>
 
 ### Step 2: Install the Snaplet Netlify Preview Plugin
 
@@ -199,7 +200,7 @@ Go to the [Snaplet Integration Page](https://www.netlify.com/integrations/snaple
 
 Now we just need to configure the plugin to work correctly. This requires adding some environment variables to your Netlify site.
 
-<br />
+<br/>
 
 ### Step 3: Add environment variables
 
@@ -239,8 +240,9 @@ You'll also need to add an environment variable for your Netlify Access Token. T
 
 ![Netlify access token in dashboard](/recipes/netlify/netlify-personal-access-token1.png)
 
+
 **3.7. Add your GitHub access token (`GITHUB_ACCESS_TOKEN`):**
-One final environment variable - your GitHub access token! We'll need to create one in GitHub, by clicking on your **avatar** in the top right, and then navigating to **Settings** > **Developer Settings** > **Personal access tokens** > **Tokens (classic)** and clicking **Generate new token** (use a **classic token** if promted). Make sure to scope it **repo** and click the **Generate token** button.
+One final environment variable - your GitHub access token! We'll need to create one in GitHub, by clicking on your **avatar** in the top right, and then navigating to **Settings** > **Developer Settings** > **Personal access tokens** > **Tokens (classic)** and clicking **Generate new token** (use a **classic token** if promted).  Make sure to scope it **repo** and click the **Generate token** button.
 
 ![Netlify access token in dashboard](/recipes/netlify/netlify-github-token.png)
 
@@ -248,7 +250,7 @@ We use this token to fetch information about the pull request associated with th
 
 That's it! All done and configured. You should have five environment variables in total, and you're now able to test your integration.
 
-<br />
+<br/>
 
 ### Step 4: Trigger a preview build.
 

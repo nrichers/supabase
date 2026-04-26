@@ -1,18 +1,22 @@
 ---
-title: 'Babelfish'
-description: 'Talk to anyone'
-repo: 'babelfish'
-repoUrl: 'https://github.com/supabase-community/babelfish'
+title: "Babelfish"
+description: "Talk to anyone"
+repo: "babelfish"
+repoUrl: "https://github.com/supabase-community/babelfish"
+stars: 2
+forks: 1
+language: "JavaScript"
+isTemplate: false
 tags:
-  - 'auth'
-  - 'realtime'
-  - 'postgres'
-  - 'functions'
-  - 'nextjs'
-  - 'react'
-  - 'python'
-  - 'expo'
-category: 'Auth'
+  - "auth"
+  - "realtime"
+  - "postgres"
+  - "functions"
+  - "nextjs"
+  - "react"
+  - "python"
+  - "expo"
+category: "Auth"
 ---
 
 > This page is generated from [babelfish](https://github.com/supabase-community/babelfish).
@@ -43,6 +47,7 @@ npm i @xenova/transformers
 Remember to add `"type": "module"` to your `package.json` to indicate that your project uses ECMAScript modules.
 
 </Tip>
+
 
 Next, let's install the [`wavefile`](https://www.npmjs.com/package/wavefile) package, which we will use for loading `.wav` files:
 
@@ -75,6 +80,7 @@ Next, create a new file called `app.js`, which will be the entry point for our a
 
 We'll also create a helper class called `MyClassificationPipeline` control the loading of the pipeline. It uses the [singleton pattern](https://en.wikipedia.org/wiki/Singleton_pattern) to lazily create a single instance of the pipeline when `getInstance` is first called, and uses this pipeline for all subsequent calls:
 
+
 ### ECMAScript modules (ESM)
 
 To indicate that your project uses ECMAScript modules, you need to add `"type": "module"` to your `package.json`:
@@ -90,30 +96,30 @@ To indicate that your project uses ECMAScript modules, you need to add `"type": 
 Next, you will need to add the following imports to the top of `app.js`:
 
 ```javascript
-import http from 'http'
-import querystring from 'querystring'
-import url from 'url'
+import http from 'http';
+import querystring from 'querystring';
+import url from 'url';
 ```
 
 Following that, let's import Transformers.js and define the `MyClassificationPipeline` class.
 
 ```javascript
-import { env, pipeline } from '@xenova/transformers'
+import { pipeline, env } from '@xenova/transformers';
 
 class MyClassificationPipeline {
-  static task = 'text-classification'
-  static model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
-  static instance = null
+  static task = 'text-classification';
+  static model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
+  static instance = null;
 
   static async getInstance(progress_callback = null) {
     if (this.instance === null) {
       // NOTE: Uncomment this to change the cache directory
       // env.cacheDir = './.cache';
 
-      this.instance = pipeline(this.task, this.model, { progress_callback })
+      this.instance = pipeline(this.task, this.model, { progress_callback });
     }
 
-    return this.instance
+    return this.instance;
   }
 }
 ```
@@ -123,31 +129,31 @@ class MyClassificationPipeline {
 Start by adding the following imports to the top of `app.js`:
 
 ```javascript
-const http = require('http')
-const querystring = require('querystring')
-const url = require('url')
+const http = require('http');
+const querystring = require('querystring');
+const url = require('url');
 ```
 
 Following that, let's import Transformers.js and define the `MyClassificationPipeline` class. Since Transformers.js is an ESM module, we will need to dynamically import the library using the [`import()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) function:
 
 ```javascript
 class MyClassificationPipeline {
-  static task = 'text-classification'
-  static model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
-  static instance = null
+  static task = 'text-classification';
+  static model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
+  static instance = null;
 
   static async getInstance(progress_callback = null) {
     if (this.instance === null) {
       // Dynamically import the Transformers.js library
-      let { pipeline, env } = await import('@xenova/transformers')
+      let { pipeline, env } = await import('@xenova/transformers');
 
       // NOTE: Uncomment this to change the cache directory
       // env.cacheDir = './.cache';
 
-      this.instance = pipeline(this.task, this.model, { progress_callback })
+      this.instance = pipeline(this.task, this.model, { progress_callback });
     }
 
-    return this.instance
+    return this.instance;
   }
 }
 ```

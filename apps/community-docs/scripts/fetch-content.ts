@@ -20,8 +20,12 @@ type RepoListItem = {
 type RepoDetails = {
   default_branch: string
   description?: string | null
+  forks_count?: number
   html_url: string
+  is_template?: boolean
+  language?: string | null
   name: string
+  stargazers_count?: number
   topics?: string[]
 }
 
@@ -47,6 +51,10 @@ type GeneratedDoc = {
   description: string
   repo: string
   repoUrl: string
+  stars: number
+  forks: number
+  language?: string
+  isTemplate: boolean
   tags: string[]
   category: string
   content: string
@@ -272,6 +280,10 @@ function toFrontmatter(doc: GeneratedDoc): string {
     `description: ${JSON.stringify(doc.description)}`,
     `repo: ${JSON.stringify(doc.repo)}`,
     `repoUrl: ${JSON.stringify(doc.repoUrl)}`,
+    `stars: ${doc.stars}`,
+    `forks: ${doc.forks}`,
+    ...(doc.language ? [`language: ${JSON.stringify(doc.language)}`] : []),
+    `isTemplate: ${doc.isTemplate}`,
     ...tagLines,
     `category: ${JSON.stringify(doc.category)}`,
     '---',
@@ -305,6 +317,10 @@ function buildGeneratedDoc(repo: RepoDetails, documents: SourceDocument[]): Gene
     description,
     repo: repo.name,
     repoUrl: repo.html_url,
+    stars: repo.stargazers_count ?? 0,
+    forks: repo.forks_count ?? 0,
+    language: repo.language ?? undefined,
+    isTemplate: repo.is_template ?? false,
     tags: inferTags(repo, combinedContent),
     category: inferCategory(repo, combinedContent),
     content: [

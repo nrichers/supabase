@@ -1,14 +1,18 @@
 ---
-title: 'Realtime Swift'
-description: 'A Swift client for Supabase Realtime server.'
-repo: 'realtime-swift'
-repoUrl: 'https://github.com/supabase-community/realtime-swift'
+title: "Realtime Swift"
+description: "A Swift client for Supabase Realtime server."
+repo: "realtime-swift"
+repoUrl: "https://github.com/supabase-community/realtime-swift"
+stars: 52
+forks: 12
+language: "Swift"
+isTemplate: false
 tags:
-  - 'realtime'
-  - 'database'
-  - 'postgres'
-  - 'swift'
-category: 'Realtime'
+  - "realtime"
+  - "database"
+  - "postgres"
+  - "swift"
+category: "Realtime"
 ---
 
 > This page is generated from [realtime-swift](https://github.com/supabase-community/realtime-swift).
@@ -58,7 +62,7 @@ client.disconnect()
 
 You can subscribe to all topic, or to specific schema parts.
 
-- Listen to all database changes:
+* Listen to all database changes:
 
 ```swift
 let allChanges = client.channel(.all)
@@ -71,7 +75,7 @@ allChanges.unsubscribe()
 allChanges.off(.all)
 ```
 
-- Listen to a specific schema's changes:
+* Listen to a specific schema's changes:
 
 ```swift
 let allPublicInsertChanges = client.channel(.schema("public"))
@@ -84,7 +88,7 @@ allPublicInsertChanges.unsubscribe()
 allPublicInsertChanges.off(.insert)
 ```
 
-- Listen to a specific table's changes:
+* Listen to a specific table's changes:
 
 ```swift
 let allUsersUpdateChanges = client.channel(.table("users", schema: "public"))
@@ -97,7 +101,7 @@ allUsersUpdateChanges.unsubscribe()
 allUsersUpdateChanges.off(.update)
 ```
 
-- Listen to a specific column's value changes:
+* Listen to a specific column's value changes:
 
 ```swift
 let allUserId99Changes = client.channel(.column("id", value: "99", table: "users", schema: "public"))

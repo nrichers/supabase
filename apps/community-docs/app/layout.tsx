@@ -13,6 +13,13 @@ const metadata: Metadata = {
   },
   description: 'Community-built integrations, examples, and getting-started guides.',
   metadataBase: new URL('https://supabase.com'),
+  icons: {
+    icon: {
+      url: 'https://supabase.com/docs/favicon/favicon.ico',
+      type: 'image/x-icon',
+    },
+    shortcut: 'https://supabase.com/docs/favicon/favicon.ico',
+  },
   robots: {
     index: false,
     follow: false,

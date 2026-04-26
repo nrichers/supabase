@@ -1,16 +1,20 @@
 ---
-title: 'Pg Parser'
-description: 'Postgres SQL parser that can run anywhere (WASM)'
-repo: 'pg-parser'
-repoUrl: 'https://github.com/supabase-community/pg-parser'
+title: "Pg Parser"
+description: "Postgres SQL parser that can run anywhere (WASM)"
+repo: "pg-parser"
+repoUrl: "https://github.com/supabase-community/pg-parser"
+stars: 15
+forks: 1
+language: "TypeScript"
+isTemplate: false
 tags:
-  - 'auth'
-  - 'database'
-  - 'postgres'
-  - 'functions'
-  - 'expo'
-  - 'parser'
-category: 'Auth'
+  - "auth"
+  - "database"
+  - "postgres"
+  - "functions"
+  - "expo"
+  - "parser"
+category: "Auth"
 ---
 
 > This page is generated from [pg-parser](https://github.com/supabase-community/pg-parser).
@@ -40,13 +44,13 @@ pnpm add @supabase/pg-parser
 ### Parse SQL to AST
 
 ```typescript
-import { PgParser } from '@supabase/pg-parser'
+import { PgParser } from '@supabase/pg-parser';
 
-const parser = new PgParser() // Defaults to latest version (17)
+const parser = new PgParser(); // Defaults to latest version (17)
 
-const { tree } = await parser.parse('SELECT * FROM users WHERE id = 1')
+const { tree } = await parser.parse('SELECT * FROM users WHERE id = 1');
 
-console.log(tree)
+console.log(tree);
 
 // { version: 170004, stmts: [ ... ] }
 ```
@@ -54,19 +58,19 @@ console.log(tree)
 ### Deparse AST to SQL
 
 ```typescript
-import { PgParser } from '@supabase/pg-parser'
+import { PgParser } from '@supabase/pg-parser';
 
-const parser = new PgParser()
+const parser = new PgParser();
 
 // Parse SQL into an AST
-const { tree } = await parser.parse('SELECT * FROM users WHERE id = 1')
+const { tree } = await parser.parse('SELECT * FROM users WHERE id = 1');
 
 // { version: 170004, stmts: [ ... ] }
 
 // Deparse the AST back into SQL
-const { sql } = await parser.deparse(tree)
+const { sql } = await parser.deparse(tree);
 
-console.log(sql)
+console.log(sql);
 
 // SELECT * FROM users WHERE id = 1
 ```
@@ -74,13 +78,13 @@ console.log(sql)
 ### Scan SQL into tokens
 
 ```typescript
-import { PgParser, unwrapScanResult } from '@supabase/pg-parser'
+import { PgParser, unwrapScanResult } from '@supabase/pg-parser';
 
-const parser = new PgParser()
+const parser = new PgParser();
 
-const tokens = await unwrapScanResult(parser.scan('SELECT 1 + 2'))
+const tokens = await unwrapScanResult(parser.scan('SELECT 1 + 2'));
 
-console.log(tokens)
+console.log(tokens);
 
 // [
 //   { kind: 'SELECT', text: 'SELECT', start: 0, end: 6, keywordKind: 'reserved' },

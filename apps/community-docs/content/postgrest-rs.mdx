@@ -1,13 +1,17 @@
 ---
-title: 'Postgrest Rs'
-description: 'Rust client for PostgREST'
-repo: 'postgrest-rs'
-repoUrl: 'https://github.com/supabase-community/postgrest-rs'
+title: "Postgrest Rs"
+description: "Rust client for PostgREST"
+repo: "postgrest-rs"
+repoUrl: "https://github.com/supabase-community/postgrest-rs"
+stars: 475
+forks: 50
+language: "Rust"
+isTemplate: false
 tags:
-  - 'auth'
-  - 'postgres'
-  - 'postgrest'
-category: 'Auth'
+  - "auth"
+  - "postgres"
+  - "postgrest"
+category: "Auth"
 ---
 
 > This page is generated from [postgrest-rs](https://github.com/supabase-community/postgrest-rs).
@@ -99,7 +103,7 @@ let body = resp
     .await?;
 ```
 
-if you have RLS enabled you're required to add an extra header for this libary to function correctly.
+if you have RLS enabled you're required to add an extra header for this libary to  function correctly.
 
 ```rust
 use postgrest::Postgrest;
@@ -125,7 +129,7 @@ let body = resp
 
 ### Building Queries
 
-These examples assume you've already initialized the client. The methods `.from()` and `.rpc()` initalizes the query builder inside the client.
+These examples assume you've already initialized the client.  The methods `.from()` and `.rpc()` initalizes the query builder inside the client.
 
 Using filters:
 

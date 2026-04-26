@@ -12,6 +12,10 @@ type CommunityDocFrontmatter = {
   description: string
   repo: string
   repoUrl: string
+  stars: number
+  forks: number
+  language?: string
+  isTemplate: boolean
   tags: string[]
   category: string
 }
@@ -59,6 +63,10 @@ function normalizeTags(value: unknown): string[] {
   return []
 }
 
+function normalizeNumber(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0
+}
+
 function getCategoryIndex(category: string) {
   const index = categoryOrder.indexOf(category)
 
@@ -74,6 +82,12 @@ function parseFrontmatter(value: object): CommunityDocFrontmatter {
     ),
     repo: assertString('repo' in value ? value.repo : undefined, 'repo'),
     repoUrl: assertString('repoUrl' in value ? value.repoUrl : undefined, 'repoUrl'),
+    stars: normalizeNumber('stars' in value ? value.stars : undefined),
+    forks: normalizeNumber('forks' in value ? value.forks : undefined),
+    language:
+      'language' in value && typeof value.language === 'string' ? value.language.trim() : undefined,
+    isTemplate:
+      'isTemplate' in value && typeof value.isTemplate === 'boolean' ? value.isTemplate : false,
     tags: normalizeTags('tags' in value ? value.tags : undefined),
     category: assertString('category' in value ? value.category : undefined, 'category'),
   }

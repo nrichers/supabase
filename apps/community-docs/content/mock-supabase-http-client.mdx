@@ -1,18 +1,22 @@
 ---
-title: 'Mock Supabase Http Client'
-description: 'A mock HTTP client for mocking Supabase Client in Dart application.'
-repo: 'mock_supabase_http_client'
-repoUrl: 'https://github.com/supabase-community/mock_supabase_http_client'
+title: "Mock Supabase Http Client"
+description: "A mock HTTP client for mocking Supabase Client in Dart application."
+repo: "mock_supabase_http_client"
+repoUrl: "https://github.com/supabase-community/mock_supabase_http_client"
+stars: 13
+forks: 5
+language: "Dart"
+isTemplate: false
 tags:
-  - 'flutter'
-  - 'supabase'
-  - 'supabase-client'
-  - 'supabase-flutter'
-  - 'testing'
-  - 'auth'
-  - 'storage'
-  - 'realtime'
-category: 'Auth'
+  - "flutter"
+  - "supabase"
+  - "supabase-client"
+  - "supabase-flutter"
+  - "testing"
+  - "auth"
+  - "storage"
+  - "realtime"
+category: "Auth"
 ---
 
 > This page is generated from [mock_supabase_http_client](https://github.com/supabase-community/mock_supabase_http_client).
@@ -24,7 +28,6 @@ category: 'Auth'
 ## Installation
 
 Add mock_supabase_http_client to your dev dependencies:
-
 ```yaml
 dev_dependencies:
   mock_supabase_http_client: ^0.0.1
@@ -76,10 +79,10 @@ void main() {
     expect(posts.first, {'title': 'Hello, world!'});
   });
 
-  // Because the mock Supabase client does not know the table schema,
+  // Because the mock Supabase client does not know the table schema, 
   // referenced table data has to be inserted in a way that you want to query it.
   //
-  // The following example shows an example where posts table has a many-to-one
+  // The following example shows an example where posts table has a many-to-one 
   // relationship with authors table and a one-to-many relationship with comments table.
   test('advanced querying with filtering and referenced tables', () async {
     // posts table has a many-to-one relationship with authors table
@@ -293,7 +296,7 @@ void main() {
             code: '23505', // Postgres unique violation code
           );
         }
-
+        
         // Simulate permission error for certain operations
         if (table == 'private_data' && type == RequestType.select) {
           throw PostgrestException(
@@ -385,7 +388,7 @@ void main() {
       (params, tables) {
         final userId = params['user_id'];
         final orders = tables['public.orders'] as List<Map<String, dynamic>>;
-
+        
         final userOrders = orders.where((order) => order['user_id'] == userId);
         final total = userOrders.fold<num>(
           0,
