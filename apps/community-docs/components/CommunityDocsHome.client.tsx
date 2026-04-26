@@ -475,7 +475,7 @@ function AreaIcon({ icon }: { icon: (typeof areas)[number]['icon'] }) {
 
 const FeaturedSectionsNav = () => (
   <nav aria-labelledby="community-docs-featured-sections-heading">
-    <div className="mb-4">
+    <div className="mb-5 space-y-1.5">
       <h2
         id="community-docs-featured-sections-heading"
         className="text-xl font-medium tracking-[-0.03em] text-foreground"
@@ -501,7 +501,7 @@ const FeaturedSectionsNav = () => (
 
 const AreasNav = () => (
   <nav className="pt-8" aria-labelledby="community-docs-areas-heading">
-    <div className="mb-4">
+    <div className="mb-5 space-y-1.5">
       <h2
         id="community-docs-areas-heading"
         className="text-xl font-medium tracking-[-0.03em] text-foreground"
@@ -559,7 +559,7 @@ const PopularCard = ({ pages, className }: { pages: CommunityDocSummary[]; class
         className
       )}
     >
-      <div className="mb-4">
+      <div className="mb-5 space-y-1.5">
         <h2 className="text-xl font-medium tracking-[-0.03em] text-foreground">Popular</h2>
         <p className="text-sm text-foreground-lighter">
           Start with highlighted community projects.
@@ -819,7 +819,7 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
 
   return (
     <div>
-      <div className="grid gap-x-8 gap-y-3 pb-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:pb-0">
+      <div className="grid gap-x-8 gap-y-3 pb-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-x-16 lg:pb-0">
         <div className="pt-6 lg:col-span-full lg:row-start-1 lg:pt-10">
           <div className="max-w-2xl space-y-4">
             <h1 className="flex items-center gap-3 text-3xl font-medium tracking-[-0.04em] text-foreground md:text-4xl">
