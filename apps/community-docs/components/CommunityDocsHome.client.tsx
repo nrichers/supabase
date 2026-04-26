@@ -811,7 +811,7 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
   return (
     <div>
       <div className="grid gap-8 pb-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:pb-0">
-        <div className="flex h-full max-w-2xl flex-col gap-8 lg:pb-20">
+        <div className="flex h-full max-w-2xl flex-col gap-8 pt-6 lg:gap-10 lg:pb-12 lg:pt-10">
           <div className="space-y-4">
             <h1 className="flex items-center gap-3 text-3xl font-medium tracking-[-0.04em] text-foreground md:text-4xl">
               <SupabaseMark className="h-8 w-8 text-foreground-lighter md:h-9 md:w-9" />
@@ -822,11 +822,11 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
             </p>
           </div>
 
-          <FeaturedSectionsNav />
-
-          <div className="lg:mt-auto">
-            <AreasNav />
+          <div className="lg:pt-4">
+            <FeaturedSectionsNav />
           </div>
+
+          <AreasNav />
         </div>
         <PopularCard pages={popularPages} />
       </div>
