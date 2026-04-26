@@ -47,6 +47,24 @@ const areas = [
   { label: 'Other', icon: 'other' },
 ] as const
 
+const featuredSections = [
+  {
+    label: 'Client Libraries',
+    description: 'Browse clients by language.',
+    href: '#client-libraries',
+  },
+  {
+    label: 'Self-hosted',
+    description: 'Deploy Supabase yourself.',
+    href: '#self-hosted',
+  },
+  {
+    label: 'Utilities',
+    description: 'Find community tools and examples.',
+    href: '#utilities',
+  },
+] as const
+
 const clientLibraryFeatures = [
   'Supabase',
   'PostgREST',
@@ -432,6 +450,32 @@ function AreaIcon({ icon }: { icon: (typeof areas)[number]['icon'] }) {
   }
 }
 
+const FeaturedSectionsNav = () => (
+  <nav aria-labelledby="community-docs-featured-sections-heading">
+    <div className="mb-4">
+      <h2
+        id="community-docs-featured-sections-heading"
+        className="text-xl font-medium tracking-[-0.03em] text-foreground"
+      >
+        Community resources
+      </h2>
+      <p className="text-sm text-foreground-lighter">Jump to curated community resources.</p>
+    </div>
+    <div className="grid gap-3 sm:grid-cols-3">
+      {featuredSections.map((section) => (
+        <a
+          key={section.href}
+          className="group flex min-h-24 flex-col justify-between rounded-lg border bg-surface-75 p-4 text-sm transition-colors hover:border-overlay-hover hover:bg-surface-100"
+          href={section.href}
+        >
+          <span className="font-medium text-foreground">{section.label}</span>
+          <span className="mt-2 text-xs text-foreground-lighter">{section.description}</span>
+        </a>
+      ))}
+    </div>
+  </nav>
+)
+
 const AreasNav = () => (
   <nav className="pt-8" aria-labelledby="community-docs-areas-heading">
     <div className="mb-4">
@@ -715,15 +759,22 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
   return (
     <div>
       <div className="grid gap-8 pb-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:pb-0">
-        <div className="max-w-2xl space-y-4 lg:pb-20">
-          <h1 className="flex items-center gap-3 text-3xl font-medium tracking-[-0.04em] text-foreground md:text-4xl">
-            <SupabaseMark className="h-8 w-8 text-foreground-lighter md:h-9 md:w-9" />
-            <span>Supabase Community Docs</span>
-          </h1>
-          <p className="text-xl text-foreground-light">
-            Community-built integrations, examples, and getting-started guides.
-          </p>
-          <AreasNav />
+        <div className="flex h-full max-w-2xl flex-col gap-8 lg:pb-20">
+          <div className="space-y-4">
+            <h1 className="flex items-center gap-3 text-3xl font-medium tracking-[-0.04em] text-foreground md:text-4xl">
+              <SupabaseMark className="h-8 w-8 text-foreground-lighter md:h-9 md:w-9" />
+              <span>Supabase Community Docs</span>
+            </h1>
+            <p className="text-xl text-foreground-light">
+              Community-built integrations, examples, and getting-started guides.
+            </p>
+          </div>
+
+          <FeaturedSectionsNav />
+
+          <div className="lg:mt-auto">
+            <AreasNav />
+          </div>
         </div>
         <PopularCard pages={popularPages} />
       </div>
