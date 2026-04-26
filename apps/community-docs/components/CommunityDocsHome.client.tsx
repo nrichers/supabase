@@ -257,18 +257,38 @@ const selfHostedProjects = [
   {
     name: 'supabase-kubernetes',
     description: 'Helm charts to deploy Supabase on Kubernetes.',
+    logo: {
+      alt: 'Kubernetes logo',
+      color: '#326CE5',
+      src: 'https://cdn.simpleicons.org/kubernetes/326CE5',
+    },
   },
   {
     name: 'supabase-terraform',
     description: 'Terraform resources for self-hosting Supabase.',
+    logo: {
+      alt: 'Terraform logo',
+      color: '#844FBA',
+      src: 'https://cdn.simpleicons.org/terraform/844FBA',
+    },
   },
   {
     name: 'supabase-traefik',
     description: 'Traefik configuration for self-hosted Supabase deployments.',
+    logo: {
+      alt: 'Traefik logo',
+      color: '#24A1C1',
+      src: 'https://cdn.simpleicons.org/traefikproxy/24A1C1',
+    },
   },
   {
     name: 'supabase-on-aws',
     description: 'CDK and CloudFormation templates for Supabase on AWS.',
+    logo: {
+      alt: 'AWS logo',
+      color: '#FF9900',
+      src: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg',
+    },
   },
 ]
 
@@ -675,13 +695,31 @@ const SelfHostedSection = () => (
           rel="noreferrer"
           target="_blank"
         >
-          <h3 className="text-sm font-medium text-brand">{project.name}</h3>
+          <h3 className="flex items-center gap-2 text-sm font-medium text-brand">
+            <SelfHostedProjectLogo logo={project.logo} />
+            <span>{project.name}</span>
+          </h3>
           <p className="mt-1 line-clamp-3 text-sm text-foreground-lighter">{project.description}</p>
         </a>
       ))}
     </div>
   </section>
 )
+
+const SelfHostedProjectLogo = ({ logo }: { logo: (typeof selfHostedProjects)[number]['logo'] }) => {
+  return (
+    <span
+      aria-label={logo.alt}
+      className="h-4 w-4 shrink-0 bg-current"
+      role="img"
+      style={{
+        WebkitMask: `url(${logo.src}) center / contain no-repeat`,
+        backgroundColor: logo.color,
+        mask: `url(${logo.src}) center / contain no-repeat`,
+      }}
+    />
+  )
+}
 
 const UtilitiesSection = () => (
   <section id="utilities" className="scroll-mt-8 space-y-4 lg:scroll-mt-12">
