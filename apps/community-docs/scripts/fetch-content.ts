@@ -1,6 +1,6 @@
 import { execFile } from 'node:child_process'
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { dirname, extname, join, resolve } from 'node:path'
+import { dirname, extname, join, posix, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 
@@ -37,10 +37,12 @@ type RepoDetails = {
 }
 
 type TreeResponse = {
-  tree?: Array<{
-    path?: string
-    type?: string
-  }>
+  tree?: TreeItem[]
+}
+
+type TreeItem = {
+  path?: string
+  type?: string
 }
 
 type ContentResponse = {
@@ -99,6 +101,15 @@ const tagKeywords = [
   'expo',
   'stripe',
 ]
+const docsEntryFilenames = [
+  'README.md',
+  'README.mdx',
+  'readme.md',
+  'readme.mdx',
+  'index.md',
+  'index.mdx',
+] as const
+const maxLinkedDocumentDepth = 2
 
 async function gh<T>(args: string[]): Promise<T> {
   const token = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN
@@ -160,60 +171,141 @@ function joinGitHubPath(...segments: Array<string | undefined>): string {
     .join('/')
 }
 
-async function getReadme(
+async function getRepositoryTree(
   source: GitHubResourceSource,
   branch: string
-): Promise<string | undefined> {
-  if (!source.path) {
-    const response = await maybeGh<ContentResponse>([
-      'api',
-      `repos/${source.owner}/${source.repo}/readme?ref=${encodeURIComponent(branch)}`,
-    ])
-
-    return decodeBase64Content(response)
-  }
-
-  const candidates = ['README.md', 'README.mdx', 'readme.md', 'readme.mdx'].map((filename) =>
-    joinGitHubPath(source.path, filename)
-  )
-
-  for (const candidate of candidates) {
-    const response = await maybeGh<ContentResponse>([
-      'api',
-      `repos/${source.owner}/${source.repo}/contents/${encodeGitHubPath(candidate)}?ref=${encodeURIComponent(branch)}`,
-    ])
-    const content = decodeBase64Content(response)
-
-    if (content) return content
-  }
-
-  return undefined
-}
-
-async function getDocsFiles(source: GitHubResourceSource, branch: string): Promise<SourceDocument[]> {
-  const tree = await maybeGh<TreeResponse>([
+): Promise<TreeItem[]> {
+  const response = await maybeGh<TreeResponse>([
     'api',
     `repos/${source.owner}/${source.repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
   ])
-  const docsRoot = joinGitHubPath(source.path, 'docs')
-  const paths =
-    tree?.tree
-      ?.filter((item) => item.type === 'blob' && item.path?.startsWith(`${docsRoot}/`))
-      .map((item) => item.path)
-      .filter((path): path is string => Boolean(path))
-      .filter((path) => ['.md', '.mdx'].includes(extname(path)))
-      .sort() ?? []
 
+  return response?.tree ?? []
+}
+
+function isMarkdownPath(path: string) {
+  return ['.md', '.mdx'].includes(extname(path).toLowerCase())
+}
+
+function isBlobPath(tree: TreeItem[], path: string) {
+  return tree.some((item) => item.type === 'blob' && item.path === path)
+}
+
+function isTreePath(tree: TreeItem[], path: string) {
+  return tree.some((item) => item.type === 'tree' && item.path === path)
+}
+
+function getSourceRoot(source: GitHubResourceSource) {
+  return joinGitHubPath(source.path)
+}
+
+function isWithinSourceRoot(path: string, sourceRoot: string) {
+  return !sourceRoot || path === sourceRoot || path.startsWith(`${sourceRoot}/`)
+}
+
+function getInitialDocumentPaths(tree: TreeItem[], source: GitHubResourceSource): string[] {
+  const sourceRoot = getSourceRoot(source)
+  const rootReadmes = docsEntryFilenames
+    .map((filename) => joinGitHubPath(sourceRoot, filename))
+    .filter((path) => isBlobPath(tree, path))
+  const docsRoot = joinGitHubPath(sourceRoot, 'docs')
+  const docsFiles = tree
+    .map((item) => item.path)
+    .filter((path): path is string => Boolean(path))
+    .filter((path) => isMarkdownPath(path))
+    .filter((path) => path.startsWith(`${docsRoot}/`))
+    .sort()
+
+  return [...new Set([...rootReadmes, ...docsFiles])]
+}
+
+function decodeMarkdownLinkTarget(target: string) {
+  const [pathWithoutHash] = target.split('#')
+  const [pathWithoutQuery] = pathWithoutHash.split('?')
+
+  try {
+    return decodeURIComponent(pathWithoutQuery)
+  } catch {
+    return pathWithoutQuery
+  }
+}
+
+function isRelativeLinkTarget(target: string) {
+  return Boolean(target) && !target.startsWith('#') && !target.startsWith('/') && !/^[a-z][a-z0-9+.-]*:/i.test(target)
+}
+
+function extractRelativeMarkdownLinks(source: string): string[] {
+  const markdownLinks = [...source.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)].map((match) => match[1])
+  const referenceLinks = [...source.matchAll(/^\[[^\]]+\]:\s+(\S+)/gm)].map((match) => match[1])
+
+  return [...markdownLinks, ...referenceLinks]
+    .map((target) => target.trim().replace(/^<|>$/g, ''))
+    .filter(isRelativeLinkTarget)
+    .map(decodeMarkdownLinkTarget)
+    .filter(Boolean)
+}
+
+function resolveLinkedDocumentPaths(
+  tree: TreeItem[],
+  source: GitHubResourceSource,
+  fromPath: string,
+  target: string
+): string[] {
+  const sourceRoot = getSourceRoot(source)
+  const resolved = posix.normalize(posix.join(posix.dirname(fromPath), target))
+
+  if (resolved.startsWith('../') || !isWithinSourceRoot(resolved, sourceRoot)) return []
+
+  if (isMarkdownPath(resolved) && isBlobPath(tree, resolved)) return [resolved]
+
+  if (!isTreePath(tree, resolved)) return []
+
+  return docsEntryFilenames
+    .map((filename) => joinGitHubPath(resolved, filename))
+    .filter((path) => isBlobPath(tree, path))
+}
+
+async function getMarkdownContent(
+  source: GitHubResourceSource,
+  branch: string,
+  path: string
+): Promise<string | undefined> {
+  const response = await maybeGh<ContentResponse>([
+    'api',
+    `repos/${source.owner}/${source.repo}/contents/${encodeGitHubPath(path)}?ref=${encodeURIComponent(branch)}`,
+  ])
+
+  return decodeBase64Content(response)
+}
+
+async function discoverSourceDocuments(
+  source: GitHubResourceSource,
+  branch: string,
+  tree: TreeItem[]
+): Promise<SourceDocument[]> {
   const documents: SourceDocument[] = []
+  const visited = new Set<string>()
+  const queue = getInitialDocumentPaths(tree, source).map((path) => ({ depth: 0, path }))
 
-  for (const path of paths) {
-    const response = await maybeGh<ContentResponse>([
-      'api',
-      `repos/${source.owner}/${source.repo}/contents/${encodeGitHubPath(path)}?ref=${encodeURIComponent(branch)}`,
-    ])
-    const content = decodeBase64Content(response)
+  for (let index = 0; index < queue.length; index++) {
+    const { depth, path } = queue[index]
 
-    if (content) documents.push({ label: path, content })
+    if (visited.has(path)) continue
+    visited.add(path)
+
+    const content = await getMarkdownContent(source, branch, path)
+
+    if (!content) continue
+
+    documents.push({ label: path, content })
+
+    if (depth >= maxLinkedDocumentDepth) continue
+
+    for (const target of extractRelativeMarkdownLinks(content)) {
+      for (const linkedPath of resolveLinkedDocumentPaths(tree, source, path, target)) {
+        if (!visited.has(linkedPath)) queue.push({ depth: depth + 1, path: linkedPath })
+      }
+    }
   }
 
   return documents
@@ -358,7 +450,7 @@ function buildGeneratedDoc(
               `{/* Source: ${label.replace(/\*\//g, '* /')} */}\n\n${sanitizeMdxContent(section)}`
           )
           .join('\n\n')
-      : 'No getting-started sections were found in the README or docs directory for this repository.'
+      : 'No getting-started sections were found in the README, linked docs, or docs directory for this repository.'
 
   return {
     title: humanizeRepoName(source.name),
@@ -417,9 +509,8 @@ async function main() {
     if (!details) continue
 
     const branch = source.branch ?? details.default_branch
-    const readme = await getReadme(source, branch)
-    const docsFiles = await getDocsFiles(source, branch)
-    const documents = [...(readme ? [{ label: 'README.md', content: readme }] : []), ...docsFiles]
+    const tree = await getRepositoryTree(source, branch)
+    const documents = await discoverSourceDocuments(source, branch, tree)
 
     const generated = buildGeneratedDoc(details, documents, source)
     const filename = `${slugify(source.name)}.mdx`
