@@ -289,7 +289,7 @@ const PopularCard = ({ pages, className }: { pages: CommunityDocSummary[]; class
   return (
     <aside
       className={cn(
-        'rounded-xl border bg-surface-75 p-4 shadow-sm md:p-5 lg:-translate-y-8',
+        'rounded-xl border bg-surface-75 p-4 shadow-sm md:p-5 lg:mt-5',
         className
       )}
     >
