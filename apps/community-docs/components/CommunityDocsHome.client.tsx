@@ -609,7 +609,7 @@ const CommunityDocsHome = ({ sections }: { sections: CommunityDocSection[] }) =>
               <span>Supabase Community Docs</span>
             </h1>
             <p className="text-xl text-foreground-light">
-              <span className="box-decoration-clone rounded-sm bg-brand/40 px-3 pb-0.5 pt-1 text-foreground">
+              <span className="box-decoration-clone rounded-sm bg-brand/40 px-3 pb-1 pt-1 text-foreground">
                 Community-built integrations, examples, and getting-started guides.
               </span>
             </p>
