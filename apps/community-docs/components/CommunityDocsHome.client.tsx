@@ -48,12 +48,36 @@ const languageColorByName: Record<string, string> = {
 }
 
 const areas = [
-  { label: 'Database', icon: 'database' },
-  { label: 'Auth', icon: 'auth' },
-  { label: 'Storage', icon: 'storage' },
-  { label: 'Realtime', icon: 'realtime' },
-  { label: 'Edge Functions', icon: 'edge-functions' },
-  { label: 'Other', icon: 'other' },
+  {
+    label: 'Database',
+    icon: 'database',
+    description: 'Community guides and examples for Postgres, schemas, and data workflows.',
+  },
+  {
+    label: 'Auth',
+    icon: 'auth',
+    description: 'Sign-in, sessions, and identity integrations from the community.',
+  },
+  {
+    label: 'Storage',
+    icon: 'storage',
+    description: 'Uploads, buckets, and file-serving examples.',
+  },
+  {
+    label: 'Realtime',
+    icon: 'realtime',
+    description: 'Live updates, channels, and presence.',
+  },
+  {
+    label: 'Edge Functions',
+    icon: 'edge-functions',
+    description: 'Serverless and edge deploy patterns from the community.',
+  },
+  {
+    label: 'Other',
+    icon: 'other',
+    description: 'Cross-cutting or mixed-area community contributions.',
+  },
 ] as const
 
 const getAreaIcon = (label: string) =>
@@ -221,13 +245,16 @@ const AreasNav = () => (
       {areas.map((area) => (
         <a
           key={area.label}
-          className="group flex items-center gap-3 rounded-lg border bg-surface-75 p-4 text-sm font-medium text-foreground transition-colors hover:border-overlay-hover hover:bg-surface-100"
+          className="group flex min-h-24 flex-col justify-between rounded-lg border bg-surface-75 p-4 text-sm transition-colors hover:border-overlay-hover hover:bg-surface-100"
           href={`#${getAreaId(area.label)}`}
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-md border bg-surface-100 text-brand transition-colors group-hover:border-overlay-hover">
-            <AreaIcon icon={area.icon} />
-          </span>
-          {area.label}
+          <div className="flex items-center gap-3">
+            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md border bg-surface-100 text-brand transition-colors group-hover:border-overlay-hover">
+              <AreaIcon icon={area.icon} />
+            </span>
+            <span className="font-medium text-foreground">{area.label}</span>
+          </div>
+          <span className="mt-2 text-xs text-foreground-lighter">{area.description}</span>
         </a>
       ))}
     </div>
