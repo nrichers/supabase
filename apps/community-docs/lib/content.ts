@@ -2,7 +2,7 @@ import 'server-only'
 
 import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
-import { basename, extname, join } from 'node:path'
+import { basename, extname, join, resolve, sep } from 'node:path'
 import matter from 'gray-matter'
 
 const CONTENT_DIRECTORY = join(process.cwd(), 'content')
@@ -33,9 +33,24 @@ type CommunityDocSection = {
   pages: CommunityDocSummary[]
 }
 
+type CommunityDocFile = {
+  filename: string
+  path: string
+}
+
 const categoryOrder = ['Database', 'Auth', 'Storage', 'Realtime', 'Edge Functions', 'Other']
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+function resolveContentPath(...segments: string[]) {
+  const fullPath = resolve(CONTENT_DIRECTORY, ...segments)
+
+  if (!fullPath.startsWith(`${CONTENT_DIRECTORY}${sep}`)) {
+    throw new Error('Accessing forbidden route. Content must be within the content directory.')
+  }
+
+  return fullPath
+}
 
 function assertString(value: unknown, field: string): string {
   if (typeof value !== 'string' || value.trim().length === 0) {
@@ -102,20 +117,14 @@ function sortPages(a: CommunityDocSummary, b: CommunityDocSummary) {
   return a.frontmatter.title.localeCompare(b.frontmatter.title)
 }
 
-async function readCommunityDoc(filename: string): Promise<CommunityDocPage> {
-  const slug = basename(filename, extname(filename))
+async function readCommunityDoc(file: CommunityDocFile): Promise<CommunityDocPage> {
+  const slug = basename(file.filename, extname(file.filename))
 
   if (!slugPattern.test(slug)) {
-    throw new Error(`Invalid community docs filename: ${filename}`)
+    throw new Error(`Invalid community docs filename: ${file.filename}`)
   }
 
-  const fullPath = join(CONTENT_DIRECTORY, filename)
-
-  if (!fullPath.startsWith(CONTENT_DIRECTORY)) {
-    throw new Error('Accessing forbidden route. Content must be within the content directory.')
-  }
-
-  const mdx = await readFile(fullPath, 'utf-8')
+  const mdx = await readFile(file.path, 'utf-8')
   const { data, content } = matter(mdx)
 
   return {
@@ -125,13 +134,32 @@ async function readCommunityDoc(filename: string): Promise<CommunityDocPage> {
   }
 }
 
+async function getCommunityDocFiles(): Promise<CommunityDocFile[]> {
+  const entries = await readdir(CONTENT_DIRECTORY, { withFileTypes: true })
+  const repoDirectories = entries.filter((entry) => entry.isDirectory())
+  const filesByRepo = await Promise.all(
+    repoDirectories.map(async (repoDirectory) => {
+      const files = await readdir(resolveContentPath(repoDirectory.name), { withFileTypes: true })
+
+      return files
+        .filter(
+          (file) =>
+            file.isFile() && extname(file.name) === '.mdx' && !basename(file.name).startsWith('_')
+        )
+        .map((file) => ({
+          filename: file.name,
+          path: resolveContentPath(repoDirectory.name, file.name),
+        }))
+    })
+  )
+
+  return filesByRepo.flat()
+}
+
 async function getAllCommunityDocPages(): Promise<CommunityDocPage[]> {
   if (!existsSync(CONTENT_DIRECTORY)) return []
 
-  const files = (await readdir(CONTENT_DIRECTORY)).filter(
-    (file) => extname(file) === '.mdx' && !basename(file).startsWith('_')
-  )
-
+  const files = await getCommunityDocFiles()
   const pages = await Promise.all(files.map(readCommunityDoc))
 
   return pages.sort(sortPages)

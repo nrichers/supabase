@@ -2,7 +2,7 @@
 
 `community-docs` is a proof-of-concept Next.js app that aggregates getting-started content from public repositories in the `supabase-community` GitHub organization.
 
-The generated MDX files live in `apps/community-docs/content/`. The app reads those files, groups them by `category` frontmatter, and renders a searchable homepage plus one project page per repo.
+The generated MDX files live in `apps/community-docs/content/<repo>/`. The app reads those files, groups them by `category` frontmatter, and renders a searchable homepage plus one project page per resource.
 
 ## Local development
 
@@ -34,7 +34,7 @@ Then run:
 pnpm --filter community-docs fetch-content
 ```
 
-The script lists public `supabase-community` repositories, fetches each README and markdown files under `/docs`, extracts sections headed `Getting Started`, `Quickstart`, `Installation`, or `Usage`, and writes one deterministic `.mdx` file per repo into `apps/community-docs/content/`.
+The script lists public `supabase-community` repositories, fetches each README and markdown files under `/docs`, extracts sections headed `Getting Started`, `Quickstart`, `Installation`, or `Usage`, and writes one deterministic `.mdx` file per resource into `apps/community-docs/content/<repo>/`.
 
 In CI, the workflow provides `GITHUB_TOKEN` for `gh` authentication.
 

@@ -1,6 +1,6 @@
 import { execFile } from 'node:child_process'
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { dirname, extname, join, posix, resolve } from 'node:path'
+import { dirname, extname, join, posix, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 
@@ -359,6 +359,16 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+function resolveContentPath(...segments: string[]) {
+  const fullPath = resolve(contentDirectory, ...segments)
+
+  if (!fullPath.startsWith(`${contentDirectory}${sep}`)) {
+    throw new Error('Generated content path must be within the content directory.')
+  }
+
+  return fullPath
+}
+
 function inferCategory(repo: RepoDetails, content: string, sourceName = repo.name): string {
   const haystack =
     `${sourceName} ${repo.name} ${repo.description ?? ''} ${repo.topics?.join(' ') ?? ''} ${content}`.toLowerCase()
@@ -475,12 +485,12 @@ function buildGeneratedDoc(
 
 async function removeGeneratedContent() {
   await mkdir(contentDirectory, { recursive: true })
-  const files = await readdir(contentDirectory)
+  const entries = await readdir(contentDirectory, { withFileTypes: true })
 
   await Promise.all(
-    files
-      .filter((file) => extname(file) === '.mdx')
-      .map((file) => rm(join(contentDirectory, file), { force: true }))
+    entries
+      .filter((entry) => entry.isDirectory() || extname(entry.name) === '.mdx')
+      .map((entry) => rm(resolveContentPath(entry.name), { force: true, recursive: true }))
   )
 }
 
@@ -513,11 +523,14 @@ async function main() {
     const documents = await discoverSourceDocuments(source, branch, tree)
 
     const generated = buildGeneratedDoc(details, documents, source)
+    const repoDirectory = resolveContentPath(source.repo)
     const filename = `${slugify(source.name)}.mdx`
+    const outputPath = join(repoDirectory, filename)
     const output = `${toFrontmatter(generated)}\n\n${generated.content}\n`
 
-    await writeFile(join(contentDirectory, filename), output)
-    console.log(`Generated content/${filename}`)
+    await mkdir(repoDirectory, { recursive: true })
+    await writeFile(outputPath, output)
+    console.log(`Generated content/${source.repo}/${filename}`)
   }
 }
 
