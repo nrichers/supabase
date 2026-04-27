@@ -39,7 +39,7 @@ const TopNav = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <nav className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
+      <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex shrink-0 items-center gap-3 text-sm font-medium">
           <SupabaseMark />
           <span className="text-foreground">Supabase</span>

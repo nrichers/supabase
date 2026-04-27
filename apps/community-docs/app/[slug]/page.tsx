@@ -41,7 +41,7 @@ const ProjectPage = async ({ params }: ProjectPageProps) => {
   const { next, previous } = await getCommunityDocNavigation(slug)
 
   return (
-    <main className="mx-auto grid w-full max-w-6xl grid-cols-12 gap-8 px-6 py-12">
+    <main className="mx-auto grid w-full max-w-7xl grid-cols-12 gap-8 px-6 py-12">
       <article className="col-span-12 lg:col-span-8">
         <div className="prose max-w-none">
           <h1>{page.frontmatter.title}</h1>

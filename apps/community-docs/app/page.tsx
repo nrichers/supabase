@@ -5,7 +5,7 @@ const HomePage = async () => {
   const sections = await getCommunityDocSections()
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-6 pt-8 pb-16">
+    <main className="mx-auto w-full max-w-7xl px-6 pt-8 pb-16">
       <CommunityDocsHome sections={sections} />
     </main>
   )
