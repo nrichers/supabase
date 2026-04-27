@@ -215,7 +215,7 @@ const FeaturedSectionsNav = () => (
       </h2>
       <p className="text-sm text-foreground-lighter">Jump to curated community resources.</p>
     </div>
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div className="grid gap-6 sm:grid-cols-3">
       {featuredSections.map((section) => (
         <a
           key={section.href}
@@ -241,7 +241,7 @@ const AreasNav = () => (
       </h2>
       <p className="text-sm text-foreground-lighter">Browse community contributions by area.</p>
     </div>
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-6 sm:grid-cols-2">
       {areas.map((area) => (
         <a
           key={area.label}
