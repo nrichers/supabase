@@ -2,7 +2,7 @@
 
 `community-docs` is a proof-of-concept Next.js app that aggregates getting-started content from public repositories in the `supabase-community` GitHub organization.
 
-The generated MDX files live in `apps/community-docs/content/<repo>/`. The app reads those files, groups them by `category` frontmatter, and renders a searchable homepage plus one project page per resource.
+The generated MDX files temporarily live in `apps/community-docs/content/<repo>/` until they can be moved to the supabase-community organization. The app reads those files, groups them by `category` frontmatter, and renders a searchable homepage plus one project page per resource.
 
 ## Local development
 
