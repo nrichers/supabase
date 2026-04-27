@@ -22,7 +22,7 @@ category: "Database"
 
 {/* Source: README.md */}
 
-## INSTALLATION
+## Installation
 
 ### Requirements
 
@@ -56,9 +56,9 @@ pip install postgrest
 
 {/* Source: README.md */}
 
-## USAGE
+## Usage
 
-### Getting started
+### Basic example
 
 ```py
 import asyncio
@@ -105,17 +105,3 @@ await client.rpc("foobar", {"arg1": "value1", "arg2": "value2"}).execute()
 ```
 
 {/* Source: README.md */}
-
-### Getting started
-
-```py
-import asyncio
-from postgrest import AsyncPostgrestClient
-
-async def main():
-    async with AsyncPostgrestClient("http://localhost:3000") as client:
-        r = await client.from_("countries").select("*").execute()
-        countries = r.data
-
-asyncio.run(main())
-```

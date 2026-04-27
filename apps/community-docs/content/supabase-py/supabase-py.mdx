@@ -63,12 +63,13 @@ user = supabase.auth.sign_in_with_password({ "email": users_email, "password": u
 
 ```python
 data = supabase.table("countries").insert({"name":"Germany"}).execute()
+```
 
 {/* Source: src/realtime/README.md */}
 
-# Usage
+## Realtime
 
-## Installing the Package
+### Installing the package
 
 ```bash
 pip3 install realtime
@@ -80,7 +81,7 @@ or using `uv`
 uv add realtime
 ```
 
-## Creating a Channel
+### Creating a channel
 
 ```python
 import asyncio
@@ -115,15 +116,16 @@ async def main():
 - `API_KEY` is a JWT whose claims must contain `exp` and `role` (existing database role).
 - Channel name can be any `string`.
 
-## Broadcast
+### Broadcast
 
 Your client can send and receive messages based on the `event`.
 
-```python
-
 {/* Source: src/functions/README.md */}
 
-## Installation
+## Edge functions
+
+### Installation
+
 The package can be installed using pip, uv or poetry:
 ### Pip
 ```bash
@@ -140,7 +142,7 @@ poetry add supabase_functions
 
 {/* Source: src/functions/README.md */}
 
-## Usage
+### Usage
 
 Deploy your Edge Function following the [Supabase Functions documentation](https://supabase.com/docs/guides/functions).
 
@@ -174,12 +176,14 @@ if __name__ == "__main__":
     asyncio.run(run_func())
 ```
 ### Synchronous Client
+
 ```python
 from supabase_functions import SyncFunctionsClient
+```
 
 {/* Source: src/postgrest/README.md */}
 
-## INSTALLATION
+## PostgREST installation
 
 ### Requirements
 
@@ -213,9 +217,9 @@ pip install postgrest
 
 {/* Source: src/postgrest/README.md */}
 
-## USAGE
+## PostgREST usage
 
-### Getting started
+### Basic example
 
 ```py
 import asyncio
@@ -261,50 +265,34 @@ await client.from_("countries").delete().eq("name", "Việt Nam").execute()
 await client.rpc("foobar", {"arg1": "value1", "arg2": "value2"}).execute()
 ```
 
-{/* Source: src/postgrest/README.md */}
-
-### Getting started
-
-```py
-import asyncio
-from postgrest import AsyncPostgrestClient
-
-async def main():
-    async with AsyncPostgrestClient("http://localhost:3000") as client:
-        r = await client.from_("countries").select("*").execute()
-        countries = r.data
-
-asyncio.run(main())
-```
-
 {/* Source: src/auth/README.md */}
 
-## Installation
+## Auth
+
+### Installation
 
 The package can be installed using pip, uv or poetry:
 
-### Pip
+#### Pip
 
 ```bash
 pip install supabase_auth
 ```
 
 
-### Uv
+#### Uv
 
 ```bash
 uv add supabase_auth
 ```
 
-### Poetry
+#### Poetry
 
 ```bash
 poetry add supabase_auth
 ```
 
-{/* Source: src/auth/README.md */}
-
-## Usage
+## Auth usage
 
 The library provides both synchronous and asynchronous clients. Here are some examples:
 
