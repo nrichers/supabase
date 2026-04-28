@@ -44,7 +44,9 @@ const TopNav = ({ className }: { className?: string }) => {
           <SupabaseMark />
           <span className="text-foreground">Supabase</span>
           <span className="h-4 w-px bg-border" />
-          <span className="text-foreground-light">Community Docs</span>
+          <span className="box-decoration-clone rounded-sm bg-brand/40 px-2 py-0.5 text-foreground">
+            Community Docs
+          </span>
         </Link>
         <div className="flex flex-1 items-center justify-end gap-3 pl-6">
           <Input
