@@ -27,6 +27,7 @@
     "rehype-slug": "^5.1.0",
     "remark-gfm": "^4.0.0",
     "server-only": "^0.0.1",
+    "shiki": "^4.0.2",
     "ui": "workspace:*"
   },
   "devDependencies": {
