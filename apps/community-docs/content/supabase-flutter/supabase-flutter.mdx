@@ -3,8 +3,8 @@ title: "Flutter"
 description: "Flutter integration for Supabase. This package makes it simple for developers to build secure and scalable products."
 repo: "supabase-flutter"
 repoUrl: "https://github.com/supabase/supabase-flutter/tree/main/packages/supabase_flutter"
-stars: 992
-forks: 297
+stars: 997
+forks: 299
 language: "Dart"
 isTemplate: false
 tags:
@@ -25,6 +25,8 @@ category: "Auth"
 
 {/* Source: packages/supabase_flutter/README.md */}
 
+## Getting Started
+
 Import the package:
 
 ```dart
@@ -41,7 +43,7 @@ void main() async {
 
   await Supabase.initialize(
     url: SUPABASE_URL,
-    anonKey: SUPABASE_ANON_KEY,
+    publishableKey: SUPABASE_KEY,
   );
 
   runApp(MyApp());

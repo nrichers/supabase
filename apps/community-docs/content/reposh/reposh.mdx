@@ -1,0 +1,59 @@
+---
+title: "Reposh"
+description: "Bash into any public repo"
+repo: "reposh"
+repoUrl: "https://github.com/supabase-community/reposh"
+stars: 2
+forks: 0
+language: "TypeScript"
+isTemplate: false
+tags:
+  - "postgres"
+  - "react"
+  - "expo"
+  - "stripe"
+  - "reposh"
+category: "Auth"
+---
+
+> This page is generated from [reposh](https://github.com/supabase-community/reposh).
+
+## Getting started
+
+{/* Source: README.md */}
+
+## Usage
+
+reposh is designed to be used by LLMs. Once you've [installed the skill](#agent-skill), your agent will know when and how to reach for it. If you prefer to build the prompt yourself, the skill source is in [SKILL.md](skills/reposh/SKILL.md).
+
+You can also use it directly from the terminal:
+
+```bash
+reposh <org>/<repo>[:ref] <bash command>
+```
+
+Append `:ref` to target a specific branch or tag:
+
+```bash
+reposh facebook/react:v18.2.0 cat package.json
+reposh vercel/next.js:canary ls src/
+reposh gitlab.com/org/project:main ls
+```
+
+Without `:ref`, reposh uses the repository's default branch. Commit hashes are not currently supported.
+
+### Non-GitHub repos
+
+Defaults to GitHub. For repos on other hosts, just include the hostname:
+
+```bash
+
+{/* Source: skills/reposh/SKILL.md */}
+
+## Usage
+
+```bash
+reposh <org>/<repo> <command>
+```
+
+Under the hood the repo is shallow-cloned and cached on first access. All subsequent commands against the same repo are fast.
