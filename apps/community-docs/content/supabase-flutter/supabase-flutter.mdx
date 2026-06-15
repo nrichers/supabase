@@ -3,8 +3,8 @@ title: "Flutter"
 description: "Flutter integration for Supabase. This package makes it simple for developers to build secure and scalable products."
 repo: "supabase-flutter"
 repoUrl: "https://github.com/supabase/supabase-flutter/tree/main/packages/supabase_flutter"
-stars: 992
-forks: 297
+stars: 1005
+forks: 300
 language: "Dart"
 isTemplate: false
 tags:
@@ -25,6 +25,8 @@ category: "Auth"
 
 {/* Source: packages/supabase_flutter/README.md */}
 
+## Getting Started
+
 Import the package:
 
 ```dart
@@ -41,7 +43,7 @@ void main() async {
 
   await Supabase.initialize(
     url: SUPABASE_URL,
-    anonKey: SUPABASE_ANON_KEY,
+    publishableKey: SUPABASE_KEY,
   );
 
   runApp(MyApp());
@@ -198,6 +200,73 @@ Future<AuthResponse> _googleSignIn() async {
   );
 }
 ...
+```
+
+#### <a id="native-facebook-sign-in"></a>Native Facebook sign in
+
+You can use [flutter_facebook_auth](https://pub.dev/packages/flutter_facebook_auth) `^7.1.7` with `signInWithIdToken` on both iOS and Android.
+
+- **iOS** uses Facebook's [Limited Login](https://developers.facebook.com/docs/facebook-login/limited-login/) (`LoginTracking.limited`), which returns a `LimitedToken` containing an OIDC ID token directly.
+- **Android** requires `LoginBehavior.webOnly` and the `openid` permission to receive an OIDC ID token in `ClassicToken.authenticationToken`.
+
+```dart
+import 'dart:io';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+Future<AuthResponse> _facebookSignIn() async {
+  late final LoginResult result;
+
+  if (Platform.isIOS) {
+    result = await FacebookAuth.instance.login(
+      permissions: ['public_profile', 'email'],
+      loginTracking: LoginTracking.limited,
+    );
+  } else {
+    // Android: webOnly behavior with openid scope returns an OIDC ID token.
+    result = await FacebookAuth.instance.login(
+      permissions: ['public_profile', 'email', 'openid'],
+      loginBehavior: LoginBehavior.webOnly,
+    );
+  }
+
+  if (result.status != LoginStatus.success) {
+    throw 'Facebook sign in failed: ${result.message}';
+  }
+
+  final accessToken = result.accessToken;
+  final String idToken;
+
+  if (accessToken is LimitedToken) {
+    idToken = accessToken.tokenString;
+  } else if (accessToken is ClassicToken) {
+    final authToken = accessToken.authenticationToken;
+    if (authToken == null) {
+      throw 'No ID token returned. Make sure to use LoginBehavior.webOnly and include the openid scope on Android.';
+    }
+    idToken = authToken;
+  } else {
+    throw 'Unexpected Facebook token type: ${accessToken?.runtimeType}';
+  }
+
+  return Supabase.instance.client.auth.signInWithIdToken(
+    provider: OAuthProvider.facebook,
+    idToken: idToken,
+  );
+}
+```
+
+Alternatively, if you do not want to use the native Facebook SDK, you can use the web-based `signInWithOAuth()` method. This will open the device's web browser to perform the classic Facebook OAuth 2.0 login flow.
+
+```dart
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+Future<void> _facebookSignInWeb() async {
+  await Supabase.instance.client.auth.signInWithOAuth(
+    OAuthProvider.facebook,
+    redirectTo: 'io.supabase.flutterdemo://login-callback',
+  );
+}
 ```
 
 ### <a id="oauth-login"></a>OAuth login

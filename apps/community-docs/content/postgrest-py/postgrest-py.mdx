@@ -3,7 +3,7 @@ title: "Postgrest Py"
 description: "PostgREST client for Python. This library provides an ORM interface to PostgREST"
 repo: "postgrest-py"
 repoUrl: "https://github.com/supabase/postgrest-py"
-stars: 315
+stars: 317
 forks: 68
 language: "Python"
 isTemplate: false
@@ -22,7 +22,7 @@ category: "Database"
 
 {/* Source: README.md */}
 
-## Installation
+## INSTALLATION
 
 ### Requirements
 
@@ -56,9 +56,9 @@ pip install postgrest
 
 {/* Source: README.md */}
 
-## Usage
+## USAGE
 
-### Basic example
+### Getting started
 
 ```py
 import asyncio
@@ -105,3 +105,17 @@ await client.rpc("foobar", {"arg1": "value1", "arg2": "value2"}).execute()
 ```
 
 {/* Source: README.md */}
+
+### Getting started
+
+```py
+import asyncio
+from postgrest import AsyncPostgrestClient
+
+async def main():
+    async with AsyncPostgrestClient("http://localhost:3000") as client:
+        r = await client.from_("countries").select("*").execute()
+        countries = r.data
+
+asyncio.run(main())
+```

@@ -3,8 +3,8 @@ title: "Py"
 description: "Python Client for Supabase. Query Postgres from Flask, Django, FastAPI. Python user authentication, security policies, edge functions, file storage, and realtime data streaming. Good first issue."
 repo: "supabase-py"
 repoUrl: "https://github.com/supabase/supabase-py"
-stars: 2496
-forks: 479
+stars: 2522
+forks: 495
 language: "Python"
 isTemplate: false
 tags:
@@ -63,13 +63,12 @@ user = supabase.auth.sign_in_with_password({ "email": users_email, "password": u
 
 ```python
 data = supabase.table("countries").insert({"name":"Germany"}).execute()
-```
 
 {/* Source: src/realtime/README.md */}
 
-## Realtime
+# Usage
 
-### Installing the package
+## Installing the Package
 
 ```bash
 pip3 install realtime
@@ -81,7 +80,7 @@ or using `uv`
 uv add realtime
 ```
 
-### Creating a channel
+## Creating a Channel
 
 ```python
 import asyncio
@@ -116,16 +115,15 @@ async def main():
 - `API_KEY` is a JWT whose claims must contain `exp` and `role` (existing database role).
 - Channel name can be any `string`.
 
-### Broadcast
+## Broadcast
 
 Your client can send and receive messages based on the `event`.
 
+```python
+
 {/* Source: src/functions/README.md */}
 
-## Edge functions
-
-### Installation
-
+## Installation
 The package can be installed using pip, uv or poetry:
 ### Pip
 ```bash
@@ -142,7 +140,7 @@ poetry add supabase_functions
 
 {/* Source: src/functions/README.md */}
 
-### Usage
+## Usage
 
 Deploy your Edge Function following the [Supabase Functions documentation](https://supabase.com/docs/guides/functions).
 
@@ -176,14 +174,12 @@ if __name__ == "__main__":
     asyncio.run(run_func())
 ```
 ### Synchronous Client
-
 ```python
 from supabase_functions import SyncFunctionsClient
-```
 
 {/* Source: src/postgrest/README.md */}
 
-## PostgREST installation
+## INSTALLATION
 
 ### Requirements
 
@@ -217,9 +213,9 @@ pip install postgrest
 
 {/* Source: src/postgrest/README.md */}
 
-## PostgREST usage
+## USAGE
 
-### Basic example
+### Getting started
 
 ```py
 import asyncio
@@ -265,34 +261,50 @@ await client.from_("countries").delete().eq("name", "Việt Nam").execute()
 await client.rpc("foobar", {"arg1": "value1", "arg2": "value2"}).execute()
 ```
 
+{/* Source: src/postgrest/README.md */}
+
+### Getting started
+
+```py
+import asyncio
+from postgrest import AsyncPostgrestClient
+
+async def main():
+    async with AsyncPostgrestClient("http://localhost:3000") as client:
+        r = await client.from_("countries").select("*").execute()
+        countries = r.data
+
+asyncio.run(main())
+```
+
 {/* Source: src/auth/README.md */}
 
-## Auth
-
-### Installation
+## Installation
 
 The package can be installed using pip, uv or poetry:
 
-#### Pip
+### Pip
 
 ```bash
 pip install supabase_auth
 ```
 
 
-#### Uv
+### Uv
 
 ```bash
 uv add supabase_auth
 ```
 
-#### Poetry
+### Poetry
 
 ```bash
 poetry add supabase_auth
 ```
 
-## Auth usage
+{/* Source: src/auth/README.md */}
+
+## Usage
 
 The library provides both synchronous and asynchronous clients. Here are some examples:
 
